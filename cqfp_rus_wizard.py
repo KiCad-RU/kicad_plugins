@@ -139,11 +139,11 @@ class CQFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         array.SetFirstPadInArray(next_pad)
         array.AddPadsToModule(self.draw)
 
-        mask_margin = pcbnew.FromMM(0.2)
+        thick = self.draw.GetLineThickness()
         lim_x = package_width / 2
         lim_y = package_height / 2
-        inner_x = (pitch_H * (n_H - 1) + pad_width) / 2 + mask_margin
-        inner_y = (pitch_V * (n_V - 1) + pad_width) / 2 + mask_margin
+        inner_x = pitch_H * (n_H - 1) / 2 + thick * 4
+        inner_y = pitch_V * (n_V - 1) / 2 + thick * 4
 
         # Silk Screen
         #TODO add silk of package if package body no intersect with pads
@@ -160,7 +160,6 @@ class CQFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         self.draw.Polyline([(inner_x, lim_y), (lim_x, lim_y), (lim_x, inner_y)])
 
         # key
-        thick = self.draw.GetLineThickness()
         keyt = thick * 2
         self.draw.SetLineThickness(keyt)
         if key_left_top:
@@ -168,11 +167,11 @@ class CQFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
             key_y = -(inner_y + keyt / 2)
             key_len = -(install_size_H / 2 + key_x - keyt / 2)
         elif ntop > nbot:
-            key_x = -(install_size_H / 2 + keyt)
+            key_x = -(install_size_H / 2 + keyt * 2)
             key_y = pitch_V
             key_len = -pcbnew.FromMM(1.5)
         else:
-            key_x = -(install_size_H / 2 + keyt)
+            key_x = -(install_size_H / 2 + keyt * 2)
             key_y = pitch_V / 2
             key_len = -pcbnew.FromMM(1.5)
         self.draw.HLine(key_x, key_y, key_len)
