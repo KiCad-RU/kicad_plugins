@@ -1,6 +1,6 @@
 # cdfp_rus_wizard.py
 #
-# Copyright (C) 2015 Eldar Khayrullin <eldar.khayrullin@mail.ru>
+# Copyright (C) 2016 Eldar Khayrullin <eldar.khayrullin@mail.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import PadArray as PA
 
 
 class RowedGridArray(PA.PadGridArray):
+
     def NamingFunction(self, x, y):
         pad_cnt = self.nx * self.ny
 
@@ -32,7 +33,7 @@ class RowedGridArray(PA.PadGridArray):
             return pad_cnt - y
 
 
-class CDFPWizard(HFPW.HelpfulFootprintWizardPlugin):
+class CDFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
 
     pad_count_key = 'pad count'
     pad_install_size_key = 'pad install size (ly)'
@@ -40,15 +41,15 @@ class CDFPWizard(HFPW.HelpfulFootprintWizardPlugin):
     pad_width_key = 'pad width'
     pad_pitch_key = 'pad pitch'
 
-    outline_height_key = 'outline height'
-    outline_width_key = 'outline width'
+    package_height_key = 'package height'
+    package_width_key = 'package width'
     coutyard_margin_key = 'courtyard margin'
 
     def GetName(self):
         return "CDFP RUS"
 
     def GetDescription(self):
-        return "CDFP rus footprint wizard"
+        return "Ceramic Dual Flat Russia Package footprint wizard"
 
     def GetValue(self):
         pad_count = self.parameters["Pads"]['*' + self.pad_count_key]
@@ -61,9 +62,9 @@ class CDFPWizard(HFPW.HelpfulFootprintWizardPlugin):
         self.AddParam("Pads", self.pad_length_key, self.uMM, 2.1)
         self.AddParam("Pads", self.pad_install_size_key, self.uMM, 18.3)
 
-        self.AddParam("Body", self.outline_height_key, self.uMM, 11.65)
-        self.AddParam("Body", self.outline_width_key, self.uMM, 9.45)
-        self.AddParam("Body", self.coutyard_margin_key, self.uMM, 1.0)
+        self.AddParam("Package", self.package_height_key, self.uMM, 11.65)
+        self.AddParam("Package", self.package_width_key, self.uMM, 9.45)
+        self.AddParam("Package", self.coutyard_margin_key, self.uMM, 1.0)
 
     def GetPad(self):
         pad_length = self.parameters["Pads"][self.pad_length_key]
@@ -73,14 +74,14 @@ class CDFPWizard(HFPW.HelpfulFootprintWizardPlugin):
 
     def BuildThisFootprint(self):
         pads = self.parameters["Pads"]
-        body = self.parameters["Body"]
+        body = self.parameters["Package"]
         num_pads = pads['*' + self.pad_count_key]
         pad_length = pads[self.pad_length_key]
         pad_width = pads[self.pad_width_key]
         pad_install_size = pads[self.pad_install_size_key]
         pad_pitch = pads[self.pad_pitch_key]
-        outline_height = body[self.outline_height_key]
-        outline_width = body[self.outline_width_key]
+        package_height = body[self.package_height_key]
+        package_width = body[self.package_width_key]
         courtyard_margin = body[self.coutyard_margin_key]
         num_cols = 2
 
@@ -93,24 +94,24 @@ class CDFPWizard(HFPW.HelpfulFootprintWizardPlugin):
         array.AddPadsToModule(self.draw)
 
         # Silk Screen
-        # outline
-        self.draw.Box(0, 0, outline_width, outline_height)
+        # package
+        self.draw.Box(0, 0, package_width, package_height)
         # pins
         mask_margin = pcbnew.FromMM(0.2)
         topy = -pad_pitch * (pads_per_col - 1) / 2
-        lpin = ((pad_install_size - outline_width) / 2 - pad_length -
+        lpin = ((pad_install_size - package_width) / 2 - pad_length -
                 mask_margin)
         for i in range(0, pads_per_col):
             py = topy + pad_pitch * i
-            self.draw.HLine(-outline_width / 2, py, -lpin)
-            self.draw.HLine(outline_width / 2, py, lpin)
+            self.draw.HLine(-package_width / 2, py, -lpin)
+            self.draw.HLine(package_width / 2, py, lpin)
         # key
         tmp = self.draw.GetLineThickness()
         keyt = tmp * 2
         self.draw.SetLineThickness(keyt)
         self.draw.HLine(-pad_install_size / 2,
                         topy - pad_width / 2 - mask_margin - keyt / 2,
-                        (pad_install_size - outline_width - tmp) / 2)
+                        (pad_install_size - package_width - tmp) / 2)
         # restore line thickness to previous value
         self.draw.SetLineThickness(pcbnew.FromMM(tmp))
 
@@ -118,7 +119,7 @@ class CDFPWizard(HFPW.HelpfulFootprintWizardPlugin):
         tmp = self.draw.GetLineThickness()
         self.draw.SetLayer(pcbnew.F_CrtYd)
         sizex = pad_install_size + courtyard_margin * 2
-        sizey = outline_height + courtyard_margin * 2
+        sizey = package_height + courtyard_margin * 2
         # set courtyard line thickness to the one defined in KLC
         self.draw.SetLineThickness(pcbnew.FromMM(0.05))
         self.draw.Box(0, 0, sizex, sizey)
@@ -132,4 +133,4 @@ class CDFPWizard(HFPW.HelpfulFootprintWizardPlugin):
         self.draw.Reference(0, -text_py, text_size)
 
 
-CDFPWizard().register()
+CDFPRUSWizard().register()
