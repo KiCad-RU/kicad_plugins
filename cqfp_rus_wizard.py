@@ -146,6 +146,7 @@ class CQFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         inner_y = (pitch_V * (n_V - 1) + pad_width) / 2 + mask_margin
 
         # Silk Screen
+        #TODO add silk of package if package body no intersect with pads
         # top left
         self.draw.Polyline([(-inner_x, -lim_y), (-lim_x, -lim_y),
                             (-lim_x, -inner_y)])
@@ -157,7 +158,25 @@ class CQFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
                             (-lim_x, inner_y)])
         # bottom right
         self.draw.Polyline([(inner_x, lim_y), (lim_x, lim_y), (lim_x, inner_y)])
-        #TODO add silk of key
+
+        # key
+        thick = self.draw.GetLineThickness()
+        keyt = thick * 2
+        self.draw.SetLineThickness(keyt)
+        if key_left_top:
+            key_x = -(lim_x + thick / 2)
+            key_y = -(inner_y + keyt / 2)
+            key_len = -(install_size_H / 2 + key_x - keyt / 2)
+        elif ntop > nbot:
+            key_x = -(install_size_H / 2 + keyt)
+            key_y = pitch_V
+            key_len = -pcbnew.FromMM(1.5)
+        else:
+            key_x = -(install_size_H / 2 + keyt)
+            key_y = pitch_V / 2
+            key_len = -pcbnew.FromMM(1.5)
+        self.draw.HLine(key_x, key_y, key_len)
+        self.draw.SetLineThickness(thick)
         #TODO add silks between pads if pads margin > 2 mm
 
         # Courtyard
