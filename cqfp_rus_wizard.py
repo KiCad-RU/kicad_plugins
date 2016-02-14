@@ -37,6 +37,7 @@ class CQFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
     package_height_key = "package height"
     package_width_key = "package width"
     courtyard_margin_key = "courtyard margin"
+    draw_full_body_key = "draw full body"
 
     def GetName(self):
         return "CQFP RUS"
@@ -58,9 +59,11 @@ class CQFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         self.AddParam("Package", self.package_height_key, self.uMM, 18.6)
         self.AddParam("Package", self.package_width_key, self.uMM, 18.6)
         self.AddParam("Package", self.courtyard_margin_key, self.uMM, 1.0)
+        self.AddParam("Package", self.draw_full_body_key, self.uBool, False)
 
     def CheckParameters(self):
         self.CheckParamBool("Pads", '*' + self.key_left_top_key)
+        self.CheckParamBool("Package", '*' + self.draw_full_body_key)
 
     def GetValue(self):
         return "CQFP-%d" % ((self.parameters["Pads"]["*" + self.n_V_key] * 2 +
@@ -80,6 +83,7 @@ class CQFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         package_height = self.parameters["Package"][self.package_height_key]
         package_width = self.parameters["Package"][self.package_width_key]
         courtyard_margin = self.parameters["Package"][self.courtyard_margin_key]
+        draw_full_body = self.parameters["Package"]['*' + self.draw_full_body_key]
 
         v_pad = PA.PadMaker(self.module).SMDPad(pad_width, pad_length,
                                                 shape=pcbnew.PAD_SHAPE_RECT)
@@ -146,18 +150,21 @@ class CQFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         inner_y = pitch_V * (n_V - 1) / 2 + thick * 4
 
         # Silk Screen
-        #TODO add silk of package if package body no intersect with pads
-        # top left
-        self.draw.Polyline([(-inner_x, -lim_y), (-lim_x, -lim_y),
-                            (-lim_x, -inner_y)])
-        # top right
-        self.draw.Polyline([(inner_x, -lim_y), (lim_x, -lim_y),
-                            (lim_x, -inner_y)])
-        # bottom left
-        self.draw.Polyline([(-inner_x, lim_y), (-lim_x, lim_y),
-                            (-lim_x, inner_y)])
-        # bottom right
-        self.draw.Polyline([(inner_x, lim_y), (lim_x, lim_y), (lim_x, inner_y)])
+        if draw_full_body:
+            self.draw.Box(0, 0, package_width, package_height)
+        else:
+            # top left
+            self.draw.Polyline([(-inner_x, -lim_y), (-lim_x, -lim_y),
+                                (-lim_x, -inner_y)])
+            # top right
+            self.draw.Polyline([(inner_x, -lim_y), (lim_x, -lim_y),
+                                (lim_x, -inner_y)])
+            # bottom left
+            self.draw.Polyline([(-inner_x, lim_y), (-lim_x, lim_y),
+                                (-lim_x, inner_y)])
+            # bottom right
+            self.draw.Polyline([(inner_x, lim_y), (lim_x, lim_y),
+                                (lim_x, inner_y)])
 
         # key
         keyt = thick * 2
@@ -176,7 +183,6 @@ class CQFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
             key_len = -pcbnew.FromMM(1.5)
         self.draw.HLine(key_x, key_y, key_len)
         self.draw.SetLineThickness(thick)
-        #TODO add silks between pads if pads margin > 2 mm
 
         # Courtyard
         self.draw.SetLayer(pcbnew.F_CrtYd)
