@@ -97,26 +97,23 @@ class CDFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         # package
         self.draw.Box(0, 0, package_width, package_height)
         # pins
-        mask_margin = pcbnew.FromMM(0.2)
+        thick = self.draw.GetLineThickness()
         topy = -pad_pitch * (pads_per_col - 1) / 2
         lpin = ((pad_install_size - package_width) / 2 - pad_length -
-                mask_margin)
+                thick * 4)
         for i in range(0, pads_per_col):
             py = topy + pad_pitch * i
             self.draw.HLine(-package_width / 2, py, -lpin)
             self.draw.HLine(package_width / 2, py, lpin)
         # key
-        tmp = self.draw.GetLineThickness()
-        keyt = tmp * 2
+        keyt = thick * 2
         self.draw.SetLineThickness(keyt)
-        self.draw.HLine(-pad_install_size / 2,
-                        topy - pad_width / 2 - mask_margin - keyt / 2,
-                        (pad_install_size - package_width - tmp) / 2)
-        # restore line thickness to previous value
-        self.draw.SetLineThickness(pcbnew.FromMM(tmp))
+        self.draw.HLine(-(package_width + thick) / 2,
+                        topy - pad_width / 2 - thick * 3,
+                        -((pad_install_size - package_width) / 2 - keyt / 2 -
+                           thick / 2))
 
         # Courtyard
-        tmp = self.draw.GetLineThickness()
         self.draw.SetLayer(pcbnew.F_CrtYd)
         sizex = pad_install_size + courtyard_margin * 2
         sizey = package_height + courtyard_margin * 2
@@ -124,7 +121,7 @@ class CDFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         self.draw.SetLineThickness(pcbnew.FromMM(0.05))
         self.draw.Box(0, 0, sizex, sizey)
         # restore line thickness to previous value
-        self.draw.SetLineThickness(pcbnew.FromMM(tmp))
+        self.draw.SetLineThickness(thick)
 
         # Reference and Value
         text_size = self.GetTextSize()  # IPC nominal
