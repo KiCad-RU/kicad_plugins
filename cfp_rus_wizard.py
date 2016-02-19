@@ -169,20 +169,21 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
             self.draw.Line(lim_x, lim_y, lim_x, inner_y)
 
         # key
-        keyt = thick * 2
-        self.draw.SetLineThickness(keyt)
+        key_thick = thick * 2
+        key_len = pcbnew.FromMM(1.5)
+        self.draw.SetLineThickness(key_thick)
         if key_left_top:
             key_x = -(lim_x + thick / 2)
-            key_y = -(inner_y + keyt / 2)
-            key_len = -(install_size_H / 2 + key_x - keyt / 2)
+            key_y = -(inner_y + key_thick / 2 - thick / 2)
+            key_len = -(install_size_H / 2 + key_x - key_thick / 2)
         elif ntop > nbot:
-            key_x = -(install_size_H / 2 + keyt * 2)
+            key_x = -(install_size_H / 2 + key_thick * 2)
             key_y = pitch_V
-            key_len = -pcbnew.FromMM(1.5)
+            key_len = -key_len
         else:
-            key_x = -(install_size_H / 2 + keyt * 2)
+            key_x = -(install_size_H / 2 + key_thick * 2)
             key_y = pitch_V / 2
-            key_len = -pcbnew.FromMM(1.5)
+            key_len = -key_len
         self.draw.HLine(key_x, key_y, key_len)
         self.draw.SetLineThickness(thick)
 
