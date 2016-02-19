@@ -139,15 +139,18 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         array.SetFirstPadInArray(next_pad)
         array.AddPadsToModule(self.draw)
 
+        # Silk Screen
         thick = self.draw.GetLineThickness()
+        silk_margin = thick * 2
         lim_x = package_width / 2
         lim_y = package_height / 2
-        inner_x = pitch_H * (n_H - 1) / 2 + thick * 4
-        inner_y = pitch_V * (n_V - 1) / 2 + thick * 4
+        inner_x = pitch_H * (n_H - 1) / 2 + pad_width / 2 + silk_margin
+        inner_y = pitch_V * (n_V - 1) / 2 + pad_width / 2 + silk_margin
+        inst_gap_v = (install_size_V - package_height) / 2
+        inst_gap_h = (install_size_H - package_width) / 2
 
-        # Silk Screen
         # top and bottom
-        if n_H == 0:
+        if n_H == 0 or inst_gap_v >= pad_length + silk_margin:
             self.draw.Line(-lim_x, -lim_y, lim_x, -lim_y)
             self.draw.Line(-lim_x, lim_y, lim_x, lim_y)
         else:
@@ -156,7 +159,7 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
             self.draw.Line(-lim_x, lim_y, -inner_x, lim_y)
             self.draw.Line(lim_x, lim_y, inner_x, lim_y)
         # left and right
-        if n_V == 0:
+        if n_V == 0 or inst_gap_h >= pad_length + silk_margin:
             self.draw.Line(-lim_x, -lim_y, -lim_x, lim_y)
             self.draw.Line(lim_x, -lim_y, lim_x, lim_y)
         else:
