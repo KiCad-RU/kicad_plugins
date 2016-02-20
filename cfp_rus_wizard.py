@@ -64,7 +64,7 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
 
     def GetValue(self):
         return "CFP-%d" % ((self.parameters["Pads"]["*" + self.n_V_key] * 2 +
-                             self.parameters["Pads"]["*" + self.n_H_key] * 2))
+                           self.parameters["Pads"]["*" + self.n_H_key] * 2))
 
     def BuildThisFootprint(self):
         n_V = self.parameters["Pads"]['*' + self.n_V_key]
@@ -209,21 +209,27 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
 
         # Courtyard
         self.draw.SetLayer(pcbnew.F_CrtYd)
-        sizex = install_size_H + courtyard_margin * 2
-        sizey = install_size_V + courtyard_margin * 2
+        if n_V == 0:
+            size_x = package_width + courtyard_margin * 2
+        else:
+            size_x = install_size_H + courtyard_margin * 2
+        if n_H == 0:
+            size_y = package_height + courtyard_margin * 2
+        else:
+            size_y = install_size_V + courtyard_margin * 2
         # set courtyard line thickness to the one defined in KLC
         thick = self.draw.GetLineThickness()
         self.draw.SetLineThickness(pcbnew.FromMM(0.05))
-        self.draw.Box(0, 0, sizex, sizey)
+        self.draw.Box(0, 0, size_x, size_y)
         # restore line thickness to previous value
         self.draw.SetLineThickness(thick)
 
         # Reference and Value
         text_size = self.GetTextSize()  # IPC nominal
-        text_py = install_size_V / 2 + courtyard_margin + text_size
+        text_y = size_y / 2 + text_size
 
-        self.draw.Value(0, text_py, text_size)
-        self.draw.Reference(0, -text_py, text_size)
+        self.draw.Value(0, text_y, text_size)
+        self.draw.Reference(0, -text_y, text_size)
 
 
 CFPRUSWizard().register()
