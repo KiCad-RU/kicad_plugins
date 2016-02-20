@@ -231,5 +231,8 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         self.draw.Value(0, text_y, text_size)
         self.draw.Reference(0, -text_y, text_size)
 
+        # Set module attribute
+        self.module.SetAttributes(pcbnew.MOD_DEFAULT)
+
 
 CFPRUSWizard().register()
