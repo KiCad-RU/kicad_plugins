@@ -168,6 +168,26 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
             self.draw.Line(lim_x, -lim_y, lim_x, -inner_y)
             self.draw.Line(lim_x, lim_y, lim_x, inner_y)
 
+        # pins
+        # horizontal
+        if n_H == 0 or inst_gap_v >= pad_length + silk_margin * 2:
+            top_x = -pitch_H * (n_H - 1) / 2
+            lpin = ((install_size_V - package_height) / 2 - pad_length -
+                     silk_margin)
+            for i in range(0, n_H):
+                pin_x = top_x + pitch_H * i
+                self.draw.VLine(pin_x, -package_height / 2, -lpin)
+                self.draw.VLine(pin_x, package_height / 2, lpin)
+        # vertical
+        if n_V == 0 or inst_gap_h >= pad_length + silk_margin * 2:
+            top_y = -pitch_V * (n_V - 1) / 2
+            lpin = ((install_size_H - package_width) / 2 - pad_length -
+                     silk_margin)
+            for i in range(0, n_V):
+                pin_y = top_y + pitch_V * i
+                self.draw.HLine(-package_width / 2, pin_y, -lpin)
+                self.draw.HLine(package_width / 2, pin_y, lpin)
+
         # key
         key_thick = thick * 2
         key_len = pcbnew.FromMM(1.5)
