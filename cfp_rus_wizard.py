@@ -24,8 +24,8 @@ import PadArray as PA
 
 class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
 
-    n_V_key = 'n vertical'
-    n_H_key = 'n horizontal'
+    n_V_key = 'n vertical on side'
+    n_H_key = 'n horizontal on side'
     pitch_V_key = 'pitch vertical'
     pitch_H_key = 'pitch horizontal'
     pad_width_key = 'pad width'
