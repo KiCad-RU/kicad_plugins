@@ -217,6 +217,9 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
             size_y = package_height + courtyard_margin * 2
         else:
             size_y = install_size_V + courtyard_margin * 2
+        # round size to nearest 0.1mm, rectangle will thus land on a 0.05mm grid
+        size_x = self.PutOnGridMM(size_x, 0.1)
+        size_y = self.PutOnGridMM(size_y, 0.1)
         # set courtyard line thickness to the one defined in KLC
         thick = self.draw.GetLineThickness()
         self.draw.SetLineThickness(pcbnew.FromMM(0.05))
