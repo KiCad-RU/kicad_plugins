@@ -24,14 +24,14 @@ import PadArray as PA
 
 class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
 
-    n_V_key = 'n vertical on side'
-    n_H_key = 'n horizontal on side'
-    pitch_V_key = 'pitch vertical'
-    pitch_H_key = 'pitch horizontal'
+    n_v_key = 'n vertical on side'
+    n_h_key = 'n horizontal on side'
+    pitch_v_key = 'pitch vertical'
+    pitch_h_key = 'pitch horizontal'
     pad_width_key = 'pad width'
     pad_length_key = 'pad length'
-    install_size_V_key = 'install size vertical'
-    install_size_H_key = 'install size horizontal'
+    install_size_v_key = 'install size vertical'
+    install_size_h_key = 'install size horizontal'
     key_left_top_key = 'key left top'
 
     package_height_key = "package height"
@@ -45,14 +45,14 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         return "Ceramic Dual/Quad Flat Russia Package footprint wizard"
 
     def GenerateParameterList(self):
-        self.AddParam("Pads", self.n_V_key, self.uNatural, 16)
-        self.AddParam("Pads", self.n_H_key, self.uNatural, 16)
-        self.AddParam("Pads", self.pitch_V_key, self.uMM, 1.0)
-        self.AddParam("Pads", self.pitch_H_key, self.uMM, 1.0)
+        self.AddParam("Pads", self.n_v_key, self.uNatural, 16)
+        self.AddParam("Pads", self.n_h_key, self.uNatural, 16)
+        self.AddParam("Pads", self.pitch_v_key, self.uMM, 1.0)
+        self.AddParam("Pads", self.pitch_h_key, self.uMM, 1.0)
         self.AddParam("Pads", self.pad_width_key, self.uMM, 0.6)
         self.AddParam("Pads", self.pad_length_key, self.uMM, 2.0)
-        self.AddParam("Pads", self.install_size_V_key, self.uMM, 21.5)
-        self.AddParam("Pads", self.install_size_H_key, self.uMM, 21.5)
+        self.AddParam("Pads", self.install_size_v_key, self.uMM, 21.5)
+        self.AddParam("Pads", self.install_size_h_key, self.uMM, 21.5)
         self.AddParam("Pads", self.key_left_top_key, self.uBool, False)
 
         self.AddParam("Package", self.package_height_key, self.uMM, 18.6)
@@ -63,18 +63,18 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         self.CheckParamBool("Pads", '*' + self.key_left_top_key)
 
     def GetValue(self):
-        return "CFP-%d" % ((self.parameters["Pads"]["*" + self.n_V_key] * 2 +
-                           self.parameters["Pads"]["*" + self.n_H_key] * 2))
+        return "CFP-%d" % ((self.parameters["Pads"]["*" + self.n_v_key] * 2 +
+                           self.parameters["Pads"]["*" + self.n_h_key] * 2))
 
     def BuildThisFootprint(self):
-        n_V = self.parameters["Pads"]['*' + self.n_V_key]
-        n_H = self.parameters["Pads"]['*' + self.n_H_key]
-        pitch_V = self.parameters["Pads"][self.pitch_V_key]
-        pitch_H = self.parameters["Pads"][self.pitch_H_key]
+        n_v = self.parameters["Pads"]['*' + self.n_v_key]
+        n_h = self.parameters["Pads"]['*' + self.n_h_key]
+        pitch_v = self.parameters["Pads"][self.pitch_v_key]
+        pitch_h = self.parameters["Pads"][self.pitch_h_key]
         pad_length = self.parameters["Pads"][self.pad_length_key]
         pad_width = self.parameters["Pads"][self.pad_width_key]
-        install_size_V = self.parameters["Pads"][self.install_size_V_key]
-        install_size_H = self.parameters["Pads"][self.install_size_H_key]
+        install_size_v = self.parameters["Pads"][self.install_size_v_key]
+        install_size_h = self.parameters["Pads"][self.install_size_h_key]
         key_left_top = self.parameters["Pads"]['*' + self.key_left_top_key]
 
         package_height = self.parameters["Package"][self.package_height_key]
@@ -87,55 +87,55 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
                                                 shape=pcbnew.PAD_SHAPE_RECT,
                                                 rot_degree=90.0)
 
-        v_pos = (install_size_V - pad_length) / 2
-        h_pos = (install_size_H - pad_length) / 2
+        v_pos = (install_size_v - pad_length) / 2
+        h_pos = (install_size_h - pad_length) / 2
 
         #left row
         if key_left_top:
             pin1Pos = pcbnew.wxPoint(-h_pos, 0)
-            array = PA.PadLineArray(v_pad, n_V, pitch_V, True, pin1Pos)
+            array = PA.PadLineArray(v_pad, n_v, pitch_v, True, pin1Pos)
             array.SetFirstPadInArray(1)
             array.AddPadsToModule(self.draw)
-            next_pad = n_V + 1
+            next_pad = n_v + 1
         else:
-            n_pads = (n_V + n_H) * 2
-            nbot = n_V // 2
-            ntop = n_V - nbot
+            n_pads = (n_v + n_h) * 2
+            nbot = n_v // 2
+            ntop = n_v - nbot
             if ntop > nbot:
-                vtop_pos = pitch_V * (ntop - 1) / 2
-                vbot_pos = pitch_V * (nbot + 1) / 2
+                vtop_pos = pitch_v * (ntop - 1) / 2
+                vbot_pos = pitch_v * (nbot + 1) / 2
             else:
-                vtop_pos = pitch_V * ntop / 2
-                vbot_pos = pitch_V * nbot / 2
+                vtop_pos = pitch_v * ntop / 2
+                vbot_pos = pitch_v * nbot / 2
 
             pin1Pos = pcbnew.wxPoint(-h_pos, -vtop_pos)
-            array = PA.PadLineArray(v_pad, ntop, pitch_V, True, pin1Pos)
+            array = PA.PadLineArray(v_pad, ntop, pitch_v, True, pin1Pos)
             array.SetFirstPadInArray(n_pads - ntop + 1)
             array.AddPadsToModule(self.draw)
 
             pin1Pos = pcbnew.wxPoint(-h_pos, vbot_pos)
-            array = PA.PadLineArray(v_pad, nbot, pitch_V, True, pin1Pos)
+            array = PA.PadLineArray(v_pad, nbot, pitch_v, True, pin1Pos)
             array.SetFirstPadInArray(1)
             array.AddPadsToModule(self.draw)
             next_pad = nbot + 1
 
         #bottom row
         pin1Pos = pcbnew.wxPoint(0, v_pos)
-        array = PA.PadLineArray(h_pad, n_H, pitch_H, False, pin1Pos)
+        array = PA.PadLineArray(h_pad, n_h, pitch_h, False, pin1Pos)
         array.SetFirstPadInArray(next_pad)
         array.AddPadsToModule(self.draw)
-        next_pad += n_H
+        next_pad += n_h
 
         #right row
         pin1Pos = pcbnew.wxPoint(h_pos, 0)
-        array = PA.PadLineArray(v_pad, n_V, -pitch_V, True, pin1Pos)
+        array = PA.PadLineArray(v_pad, n_v, -pitch_v, True, pin1Pos)
         array.SetFirstPadInArray(next_pad)
         array.AddPadsToModule(self.draw)
-        next_pad += n_V
+        next_pad += n_v
 
         #top row
         pin1Pos = pcbnew.wxPoint(0, -v_pos)
-        array = PA.PadLineArray(h_pad, n_H, -pitch_H, False, pin1Pos)
+        array = PA.PadLineArray(h_pad, n_h, -pitch_h, False, pin1Pos)
         array.SetFirstPadInArray(next_pad)
         array.AddPadsToModule(self.draw)
 
@@ -144,13 +144,13 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         silk_margin = thick * 2
         lim_x = package_width / 2
         lim_y = package_height / 2
-        inner_x = pitch_H * (n_H - 1) / 2 + pad_width / 2 + silk_margin
-        inner_y = pitch_V * (n_V - 1) / 2 + pad_width / 2 + silk_margin
-        inst_gap_v = (install_size_V - package_height) / 2
-        inst_gap_h = (install_size_H - package_width) / 2
+        inner_x = pitch_h * (n_h - 1) / 2 + pad_width / 2 + silk_margin
+        inner_y = pitch_v * (n_v - 1) / 2 + pad_width / 2 + silk_margin
+        inst_gap_v = (install_size_v - package_height) / 2
+        inst_gap_h = (install_size_h - package_width) / 2
 
         # top and bottom
-        if n_H == 0 or inst_gap_v >= pad_length + silk_margin:
+        if n_h == 0 or inst_gap_v >= pad_length + silk_margin:
             self.draw.Line(-lim_x, -lim_y, lim_x, -lim_y)
             self.draw.Line(-lim_x, lim_y, lim_x, lim_y)
         else:
@@ -159,7 +159,7 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
             self.draw.Line(-lim_x, lim_y, -inner_x, lim_y)
             self.draw.Line(lim_x, lim_y, inner_x, lim_y)
         # left and right
-        if n_V == 0 or inst_gap_h >= pad_length + silk_margin:
+        if n_v == 0 or inst_gap_h >= pad_length + silk_margin:
             self.draw.Line(-lim_x, -lim_y, -lim_x, lim_y)
             self.draw.Line(lim_x, -lim_y, lim_x, lim_y)
         else:
@@ -170,21 +170,21 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
 
         # pins
         # horizontal
-        if n_H != 0 and inst_gap_v >= pad_length + silk_margin * 2:
-            top_x = -pitch_H * (n_H - 1) / 2
-            lpin = ((install_size_V - package_height) / 2 - pad_length -
+        if n_h != 0 and inst_gap_v >= pad_length + silk_margin * 2:
+            top_x = -pitch_h * (n_h - 1) / 2
+            lpin = ((install_size_v - package_height) / 2 - pad_length -
                      silk_margin)
-            for i in range(0, n_H):
-                pin_x = top_x + pitch_H * i
+            for i in range(0, n_h):
+                pin_x = top_x + pitch_h * i
                 self.draw.VLine(pin_x, -package_height / 2, -lpin)
                 self.draw.VLine(pin_x, package_height / 2, lpin)
         # vertical
-        if n_V != 0 and inst_gap_h >= pad_length + silk_margin * 2:
-            top_y = -pitch_V * (n_V - 1) / 2
-            lpin = ((install_size_H - package_width) / 2 - pad_length -
+        if n_v != 0 and inst_gap_h >= pad_length + silk_margin * 2:
+            top_y = -pitch_v * (n_v - 1) / 2
+            lpin = ((install_size_h - package_width) / 2 - pad_length -
                      silk_margin)
-            for i in range(0, n_V):
-                pin_y = top_y + pitch_V * i
+            for i in range(0, n_v):
+                pin_y = top_y + pitch_v * i
                 self.draw.HLine(-package_width / 2, pin_y, -lpin)
                 self.draw.HLine(package_width / 2, pin_y, lpin)
 
@@ -195,28 +195,28 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         if key_left_top:
             key_x = -(lim_x + thick / 2)
             key_y = -(inner_y + key_thick / 2 - thick / 2)
-            key_len = -(install_size_H / 2 + key_x - key_thick / 2)
+            key_len = -(install_size_h / 2 + key_x - key_thick / 2)
         elif ntop > nbot:
-            key_x = -(install_size_H / 2 + key_thick * 2)
-            key_y = pitch_V
+            key_x = -(install_size_h / 2 + key_thick * 2)
+            key_y = pitch_v
             key_len = -key_len
         else:
-            key_x = -(install_size_H / 2 + key_thick * 2)
-            key_y = pitch_V / 2
+            key_x = -(install_size_h / 2 + key_thick * 2)
+            key_y = pitch_v / 2
             key_len = -key_len
         self.draw.HLine(key_x, key_y, key_len)
         self.draw.SetLineThickness(thick)
 
         # Courtyard
         self.draw.SetLayer(pcbnew.F_CrtYd)
-        if n_V == 0:
+        if n_v == 0:
             size_x = package_width + courtyard_margin * 2
         else:
-            size_x = install_size_H + courtyard_margin * 2
-        if n_H == 0:
+            size_x = install_size_h + courtyard_margin * 2
+        if n_h == 0:
             size_y = package_height + courtyard_margin * 2
         else:
-            size_y = install_size_V + courtyard_margin * 2
+            size_y = install_size_v + courtyard_margin * 2
         # round size to nearest 0.1mm, rectangle will thus land on a 0.05mm grid
         size_x = self.PutOnGridMM(size_x, 0.1)
         size_y = self.PutOnGridMM(size_y, 0.1)
