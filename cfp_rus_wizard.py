@@ -92,8 +92,8 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
 
         #left row
         if key_left_top:
-            pin1Pos = pcbnew.wxPoint(-h_pos, 0)
-            array = PA.PadLineArray(v_pad, n_v, pitch_v, True, pin1Pos)
+            pin1_pos = pcbnew.wxPoint(-h_pos, 0)
+            array = PA.PadLineArray(v_pad, n_v, pitch_v, True, pin1_pos)
             array.SetFirstPadInArray(1)
             array.AddPadsToModule(self.draw)
             next_pad = n_v + 1
@@ -108,34 +108,34 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
                 vtop_pos = pitch_v * ntop / 2
                 vbot_pos = pitch_v * nbot / 2
 
-            pin1Pos = pcbnew.wxPoint(-h_pos, -vtop_pos)
-            array = PA.PadLineArray(v_pad, ntop, pitch_v, True, pin1Pos)
+            pin1_pos = pcbnew.wxPoint(-h_pos, -vtop_pos)
+            array = PA.PadLineArray(v_pad, ntop, pitch_v, True, pin1_pos)
             array.SetFirstPadInArray(n_pads - ntop + 1)
             array.AddPadsToModule(self.draw)
 
-            pin1Pos = pcbnew.wxPoint(-h_pos, vbot_pos)
-            array = PA.PadLineArray(v_pad, nbot, pitch_v, True, pin1Pos)
+            pin1_pos = pcbnew.wxPoint(-h_pos, vbot_pos)
+            array = PA.PadLineArray(v_pad, nbot, pitch_v, True, pin1_pos)
             array.SetFirstPadInArray(1)
             array.AddPadsToModule(self.draw)
             next_pad = nbot + 1
 
         #bottom row
-        pin1Pos = pcbnew.wxPoint(0, v_pos)
-        array = PA.PadLineArray(h_pad, n_h, pitch_h, False, pin1Pos)
+        pin1_pos = pcbnew.wxPoint(0, v_pos)
+        array = PA.PadLineArray(h_pad, n_h, pitch_h, False, pin1_pos)
         array.SetFirstPadInArray(next_pad)
         array.AddPadsToModule(self.draw)
         next_pad += n_h
 
         #right row
-        pin1Pos = pcbnew.wxPoint(h_pos, 0)
-        array = PA.PadLineArray(v_pad, n_v, -pitch_v, True, pin1Pos)
+        pin1_pos = pcbnew.wxPoint(h_pos, 0)
+        array = PA.PadLineArray(v_pad, n_v, -pitch_v, True, pin1_pos)
         array.SetFirstPadInArray(next_pad)
         array.AddPadsToModule(self.draw)
         next_pad += n_v
 
         #top row
-        pin1Pos = pcbnew.wxPoint(0, -v_pos)
-        array = PA.PadLineArray(h_pad, n_h, -pitch_h, False, pin1Pos)
+        pin1_pos = pcbnew.wxPoint(0, -v_pos)
+        array = PA.PadLineArray(h_pad, n_h, -pitch_h, False, pin1_pos)
         array.SetFirstPadInArray(next_pad)
         array.AddPadsToModule(self.draw)
 
