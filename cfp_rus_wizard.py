@@ -45,18 +45,18 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         return "Ceramic Dual/Quad Flat Russia Package footprint wizard"
 
     def GenerateParameterList(self):
-        self.AddParam("Pads", self.n_v_key, self.uNatural, 16)
-        self.AddParam("Pads", self.n_h_key, self.uNatural, 16)
-        self.AddParam("Pads", self.pitch_v_key, self.uMM, 1.0)
-        self.AddParam("Pads", self.pitch_h_key, self.uMM, 1.0)
-        self.AddParam("Pads", self.pad_width_key, self.uMM, 0.6)
-        self.AddParam("Pads", self.pad_length_key, self.uMM, 2.0)
-        self.AddParam("Pads", self.install_size_v_key, self.uMM, 21.5)
-        self.AddParam("Pads", self.install_size_h_key, self.uMM, 21.5)
-        self.AddParam("Pads", self.key_left_top_key, self.uBool, False)
+        self.AddParam("Pads", self.n_v_key, self.uNatural, 8)
+        self.AddParam("Pads", self.n_h_key, self.uNatural, 0)
+        self.AddParam("Pads", self.pitch_v_key, self.uMM, 1.25)
+        self.AddParam("Pads", self.pitch_h_key, self.uMM, 1.25)
+        self.AddParam("Pads", self.pad_width_key, self.uMM, 0.8)
+        self.AddParam("Pads", self.pad_length_key, self.uMM, 2.1)
+        self.AddParam("Pads", self.install_size_v_key, self.uMM, 18.3)
+        self.AddParam("Pads", self.install_size_h_key, self.uMM, 18.3)
+        self.AddParam("Pads", self.key_left_top_key, self.uBool, True)
 
-        self.AddParam("Package", self.package_height_key, self.uMM, 18.6)
-        self.AddParam("Package", self.package_width_key, self.uMM, 18.6)
+        self.AddParam("Package", self.package_height_key, self.uMM, 12.0)
+        self.AddParam("Package", self.package_width_key, self.uMM, 9.5)
         self.AddParam("Package", self.courtyard_margin_key, self.uMM, 1.0)
 
     def CheckParameters(self):
