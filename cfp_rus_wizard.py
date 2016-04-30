@@ -36,7 +36,7 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
 
     package_height_key = "package height"
     package_width_key = "package width"
-    courtyard_margin_key = "courtyard margin"
+    crtyrd_margin_key = "courtyard margin"
 
     def GetName(self):
         return "CFP RUS"
@@ -57,7 +57,7 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
 
         self.AddParam("Package", self.package_height_key, self.uMM, 12.0)
         self.AddParam("Package", self.package_width_key, self.uMM, 9.5)
-        self.AddParam("Package", self.courtyard_margin_key, self.uMM, 1.0)
+        self.AddParam("Package", self.crtyrd_margin_key, self.uMM, 1.0)
 
     def CheckParameters(self):
         self.CheckParamBool("Pads", '*' + self.key_left_top_key)
@@ -79,7 +79,7 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
 
         package_height = self.parameters["Package"][self.package_height_key]
         package_width = self.parameters["Package"][self.package_width_key]
-        courtyard_margin = self.parameters["Package"][self.courtyard_margin_key]
+        crtyrd_margin = self.parameters["Package"][self.crtyrd_margin_key]
 
         v_pad = PA.PadMaker(self.module).SMDPad(pad_width, pad_length,
                                                 shape=pcbnew.PAD_SHAPE_RECT)
@@ -90,7 +90,7 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         v_pos = (install_size_v - pad_length) / 2
         h_pos = (install_size_h - pad_length) / 2
 
-        #left row
+        # left row
         if key_left_top:
             pin1_pos = pcbnew.wxPoint(-h_pos, 0)
             array = PA.PadLineArray(v_pad, n_v, pitch_v, True, pin1_pos)
@@ -119,21 +119,21 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
             array.AddPadsToModule(self.draw)
             next_pad = nbot + 1
 
-        #bottom row
+        # bottom row
         pin1_pos = pcbnew.wxPoint(0, v_pos)
         array = PA.PadLineArray(h_pad, n_h, pitch_h, False, pin1_pos)
         array.SetFirstPadInArray(next_pad)
         array.AddPadsToModule(self.draw)
         next_pad += n_h
 
-        #right row
+        # right row
         pin1_pos = pcbnew.wxPoint(h_pos, 0)
         array = PA.PadLineArray(v_pad, n_v, -pitch_v, True, pin1_pos)
         array.SetFirstPadInArray(next_pad)
         array.AddPadsToModule(self.draw)
         next_pad += n_v
 
-        #top row
+        # top row
         pin1_pos = pcbnew.wxPoint(0, -v_pos)
         array = PA.PadLineArray(h_pad, n_h, -pitch_h, False, pin1_pos)
         array.SetFirstPadInArray(next_pad)
@@ -173,7 +173,7 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         if n_h != 0 and inst_gap_v >= pad_length + silk_margin * 2:
             top_x = -pitch_h * (n_h - 1) / 2
             lpin = ((install_size_v - package_height) / 2 - pad_length -
-                     silk_margin)
+                    silk_margin)
             for i in range(0, n_h):
                 pin_x = top_x + pitch_h * i
                 self.draw.VLine(pin_x, -package_height / 2, -lpin)
@@ -182,7 +182,7 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         if n_v != 0 and inst_gap_h >= pad_length + silk_margin * 2:
             top_y = -pitch_v * (n_v - 1) / 2
             lpin = ((install_size_h - package_width) / 2 - pad_length -
-                     silk_margin)
+                    silk_margin)
             for i in range(0, n_v):
                 pin_y = top_y + pitch_v * i
                 self.draw.HLine(-package_width / 2, pin_y, -lpin)
@@ -210,14 +210,15 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         # Courtyard
         self.draw.SetLayer(pcbnew.F_CrtYd)
         if n_v == 0:
-            size_x = package_width + courtyard_margin * 2
+            size_x = package_width + crtyrd_margin * 2
         else:
-            size_x = install_size_h + courtyard_margin * 2
+            size_x = install_size_h + crtyrd_margin * 2
         if n_h == 0:
-            size_y = package_height + courtyard_margin * 2
+            size_y = package_height + crtyrd_margin * 2
         else:
-            size_y = install_size_v + courtyard_margin * 2
-        # round size to nearest 0.1mm, rectangle will thus land on a 0.05mm grid
+            size_y = install_size_v + crtyrd_margin * 2
+        # round size to nearest 0.1mm,
+        # rectangle will thus land on a 0.05mm grid
         size_x = self.PutOnGridMM(size_x, 0.1)
         size_y = self.PutOnGridMM(size_y, 0.1)
         # set courtyard line thickness to the one defined in KLC
