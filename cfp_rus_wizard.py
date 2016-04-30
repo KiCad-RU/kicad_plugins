@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+''' KiCad PCBNew Footprint Wizard script for creating CFP Russian housings '''
+
 from __future__ import division
 import pcbnew
 
@@ -23,6 +25,7 @@ import PadArray as PA
 
 
 class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
+    ''' Plugin class '''
 
     n_v_key = 'n vertical on side'
     n_h_key = 'n horizontal on side'
@@ -64,7 +67,7 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
 
     def GetValue(self):
         return "CFP-%d" % ((self.parameters["Pads"]["*" + self.n_v_key] * 2 +
-                           self.parameters["Pads"]["*" + self.n_h_key] * 2))
+                            self.parameters["Pads"]["*" + self.n_h_key] * 2))
 
     def BuildThisFootprint(self):
         n_v = self.parameters["Pads"]['*' + self.n_v_key]
