@@ -232,7 +232,7 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
         for l in range(0, 2):
             if l == 0:
                 self.draw.SetLayer(pcbnew.F_SilkS)
-                self.draw.SetLineThickness(SILKS_TICKNESS)
+                self.draw.SetLineThickness(key_thick)
             else:
                 self.draw.SetLayer(pcbnew.F_Fab)
                 self.draw.SetLineThickness(FAB_TICKNESS)
