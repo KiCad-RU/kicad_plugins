@@ -1,6 +1,6 @@
 # cfp_rus_wizard.py
 #
-# Copyright (C) 2016 Eldar Khayrullin <eldar.khayrullin@mail.ru>
+# Copyright (C) 2016,2017 Eldar Khayrullin <eldar.khayrullin@mail.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,11 +20,11 @@
 from __future__ import division
 import pcbnew
 
-import HelpfulFootprintWizardPlugin as HFPW
+import FootprintWizardBase
 import PadArray as PA
 
 
-class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
+class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
     ''' Plugin class '''
 
     n_v_key = 'n vertical on side'
@@ -48,8 +48,8 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         return "Ceramic Dual/Quad Flat Russia Package footprint wizard"
 
     def GenerateParameterList(self):
-        self.AddParam("Pads", self.n_v_key, self.uNatural, 8)
-        self.AddParam("Pads", self.n_h_key, self.uNatural, 0)
+        self.AddParam("Pads", self.n_v_key, self.uInteger, 8, min_value=0)
+        self.AddParam("Pads", self.n_h_key, self.uInteger, 0, min_value=0)
         self.AddParam("Pads", self.pitch_v_key, self.uMM, 1.25)
         self.AddParam("Pads", self.pitch_h_key, self.uMM, 1.25)
         self.AddParam("Pads", self.pad_width_key, self.uMM, 0.8)
@@ -63,22 +63,22 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
         self.AddParam("Package", self.crtyrd_margin_key, self.uMM, 1.0)
 
     def CheckParameters(self):
-        self.CheckParamBool("Pads", '*' + self.key_left_top_key)
+        pass
 
     def GetValue(self):
-        return "CFP-%d" % ((self.parameters["Pads"]["*" + self.n_v_key] * 2 +
-                            self.parameters["Pads"]["*" + self.n_h_key] * 2))
+        return "CFP-%d" % ((self.parameters["Pads"][self.n_v_key] * 2 +
+                            self.parameters["Pads"][self.n_h_key] * 2))
 
     def BuildThisFootprint(self):
-        n_v = self.parameters["Pads"]['*' + self.n_v_key]
-        n_h = self.parameters["Pads"]['*' + self.n_h_key]
+        n_v = self.parameters["Pads"][self.n_v_key]
+        n_h = self.parameters["Pads"][self.n_h_key]
         pitch_v = self.parameters["Pads"][self.pitch_v_key]
         pitch_h = self.parameters["Pads"][self.pitch_h_key]
         pad_length = self.parameters["Pads"][self.pad_length_key]
         pad_width = self.parameters["Pads"][self.pad_width_key]
         install_size_v = self.parameters["Pads"][self.install_size_v_key]
         install_size_h = self.parameters["Pads"][self.install_size_h_key]
-        key_left_top = self.parameters["Pads"]['*' + self.key_left_top_key]
+        key_left_top = self.parameters["Pads"][self.key_left_top_key]
 
         package_height = self.parameters["Package"][self.package_height_key]
         package_width = self.parameters["Package"][self.package_width_key]
@@ -222,8 +222,8 @@ class CFPRUSWizard(HFPW.HelpfulFootprintWizardPlugin):
             size_y = install_size_v + crtyrd_margin * 2
         # round size to nearest 0.1mm,
         # rectangle will thus land on a 0.05mm grid
-        size_x = self.PutOnGridMM(size_x, 0.1)
-        size_y = self.PutOnGridMM(size_y, 0.1)
+        size_x = pcbnew.PutOnGridMM(size_x, 0.1)
+        size_y = pcbnew.PutOnGridMM(size_y, 0.1)
         # set courtyard line thickness to the one defined in KLC
         thick = self.draw.GetLineThickness()
         self.draw.SetLineThickness(pcbnew.FromMM(0.05))
