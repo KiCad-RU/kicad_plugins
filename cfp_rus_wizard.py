@@ -37,15 +37,15 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
     install_size_h_key = 'install size horizontal'
     key_left_top_key = 'key left top'
 
-    package_height_key = "package height"
-    package_width_key = "package width"
-    crtyrd_margin_key = "courtyard margin"
+    package_height_key = 'package height'
+    package_width_key = 'package width'
+    crtyrd_margin_key = 'courtyard margin'
 
     def GetName(self):
         return "CFP RUS"
 
     def GetDescription(self):
-        return "Ceramic Dual/Quad Flat Russia Package footprint wizard"
+        return "Ceramic Dual/Quad Flat (CFP) Russia Package footprint wizard"
 
     def GenerateParameterList(self):
         self.AddParam("Pads", self.n_v_key, self.uInteger, 8, min_value=0)
