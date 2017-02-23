@@ -24,6 +24,11 @@ import FootprintWizardBase
 import PadArray as PA
 
 
+CRTYD_TICKNESS = pcbnew.FromMM(0.05)
+FAB_TICKNESS = pcbnew.FromMM(0.1)
+SILKS_TICKNESS = pcbnew.FromMM(0.15)
+
+
 class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
     ''' Plugin class '''
 
@@ -142,9 +147,12 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
         array.SetFirstPadInArray(next_pad)
         array.AddPadsToModule(self.draw)
 
+        # Store line thickness
+        def_thick = self.draw.GetLineThickness()
+
         # Silk Screen
-        thick = self.draw.GetLineThickness()
-        silk_margin = thick * 2
+        self.draw.SetLineThickness(SILKS_TICKNESS)
+        silk_margin = SILKS_TICKNESS * 2
         lim_x = package_width / 2
         lim_y = package_height / 2
         inner_x = pitch_h * (n_h - 1) / 2 + pad_width / 2 + silk_margin
@@ -179,8 +187,15 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
                     silk_margin)
             for i in range(0, n_h):
                 pin_x = top_x + pitch_h * i
-                self.draw.VLine(pin_x, -package_height / 2, -lpin)
-                self.draw.VLine(pin_x, package_height / 2, lpin)
+                for l in range(0, 2):
+                    if l == 0:
+                        self.draw.SetLayer(pcbnew.F_SilkS)
+                        self.draw.SetLineThickness(SILKS_TICKNESS)
+                    else:
+                        self.draw.SetLayer(pcbnew.F_Fab)
+                        self.draw.SetLineThickness(FAB_TICKNESS)
+                    self.draw.VLine(pin_x, -package_height / 2, -lpin)
+                    self.draw.VLine(pin_x, package_height / 2, lpin)
         # vertical
         if n_v != 0 and inst_gap_h >= pad_length + silk_margin * 2:
             top_y = -pitch_v * (n_v - 1) / 2
@@ -188,16 +203,23 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
                     silk_margin)
             for i in range(0, n_v):
                 pin_y = top_y + pitch_v * i
-                self.draw.HLine(-package_width / 2, pin_y, -lpin)
-                self.draw.HLine(package_width / 2, pin_y, lpin)
+                for l in range(0, 2):
+                    if l == 0:
+                        self.draw.SetLayer(pcbnew.F_SilkS)
+                        self.draw.SetLineThickness(SILKS_TICKNESS)
+                    else:
+                        self.draw.SetLayer(pcbnew.F_Fab)
+                        self.draw.SetLineThickness(FAB_TICKNESS)
+                    self.draw.HLine(-package_width / 2, pin_y, -lpin)
+                    self.draw.HLine(package_width / 2, pin_y, lpin)
 
         # key
-        key_thick = thick * 2
+        key_thick = SILKS_TICKNESS * 2
         key_len = pcbnew.FromMM(1.5)
         self.draw.SetLineThickness(key_thick)
         if key_left_top:
-            key_x = -(lim_x + thick / 2)
-            key_y = -(inner_y + key_thick / 2 - thick / 2)
+            key_x = -(lim_x + SILKS_TICKNESS / 2)
+            key_y = -(inner_y + key_thick / 2 - SILKS_TICKNESS / 2)
             key_len = -(install_size_h / 2 + key_x - key_thick / 2)
         elif ntop > nbot:
             key_x = -(install_size_h / 2 + key_thick * 2)
@@ -207,8 +229,19 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
             key_x = -(install_size_h / 2 + key_thick * 2)
             key_y = pitch_v / 2
             key_len = -key_len
-        self.draw.HLine(key_x, key_y, key_len)
-        self.draw.SetLineThickness(thick)
+        for l in range(0, 2):
+            if l == 0:
+                self.draw.SetLayer(pcbnew.F_SilkS)
+                self.draw.SetLineThickness(SILKS_TICKNESS)
+            else:
+                self.draw.SetLayer(pcbnew.F_Fab)
+                self.draw.SetLineThickness(FAB_TICKNESS)
+            self.draw.HLine(key_x, key_y, key_len)
+
+        # F_Fab layer
+        self.draw.SetLineThickness(FAB_TICKNESS)
+        # outline
+        self.draw.Box(0, 0, package_width, package_height)
 
         # Courtyard
         self.draw.SetLayer(pcbnew.F_CrtYd)
@@ -225,11 +258,8 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
         size_x = pcbnew.PutOnGridMM(size_x, 0.1)
         size_y = pcbnew.PutOnGridMM(size_y, 0.1)
         # set courtyard line thickness to the one defined in KLC
-        thick = self.draw.GetLineThickness()
-        self.draw.SetLineThickness(pcbnew.FromMM(0.05))
+        self.draw.SetLineThickness(CRTYD_TICKNESS)
         self.draw.Box(0, 0, size_x, size_y)
-        # restore line thickness to previous value
-        self.draw.SetLineThickness(thick)
 
         # Reference and Value
         text_size = self.GetTextSize()  # IPC nominal
@@ -240,6 +270,9 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
 
         # Set module attribute
         self.module.SetAttributes(pcbnew.MOD_DEFAULT)
+
+        # restore line thickness to previous value
+        self.draw.SetLineThickness(def_thick)
 
 
 CFPRUSWizard().register()
