@@ -210,6 +210,57 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
         self.draw.HLine(key_x, key_y, key_len)
         self.draw.SetLineThickness(thick)
 
+        # Fabrication
+        self.draw.SetLayer(pcbnew.F_Fab)
+        thick = pcbnew.FromMM(0.1)
+        self.draw.SetLineThickness(thick)
+        fab_margin = thick
+        lim_x = package_width / 2
+        lim_y = package_height / 2
+        inner_x = pitch_h * (n_h - 1) / 2 + pad_width / 2 + silk_margin
+        inner_y = pitch_v * (n_v - 1) / 2 + pad_width / 2 + silk_margin
+        inst_gap_v = (install_size_v - package_height) / 2
+        inst_gap_h = (install_size_h - package_width) / 2
+
+        # top and bottom
+        self.draw.Line(-lim_x, -lim_y, lim_x, -lim_y)
+        self.draw.Line(-lim_x, lim_y, lim_x, lim_y)
+        # left and right
+        self.draw.Line(-lim_x, -lim_y, -lim_x, lim_y)
+        self.draw.Line(lim_x, -lim_y, lim_x, lim_y)
+
+        # pins
+        # horizontal
+        if n_h != 0 and inst_gap_v > fab_margin:
+            top_x = -pitch_h * (n_h - 1) / 2
+            lpin = (install_size_v - package_height) / 2 - fab_margin
+            for i in range(0, n_h):
+                pin_x = top_x + pitch_h * i
+                self.draw.VLine(pin_x, -package_height / 2, -lpin)
+                self.draw.VLine(pin_x, package_height / 2, lpin)
+        # vertical
+        if n_v != 0 and inst_gap_h > fab_margin:
+            top_y = -pitch_v * (n_v - 1) / 2
+            lpin = (install_size_h - package_width) / 2 - fab_margin
+            for i in range(0, n_v):
+                pin_y = top_y + pitch_v * i
+                self.draw.HLine(-package_width / 2, pin_y, -lpin)
+                self.draw.HLine(package_width / 2, pin_y, lpin)
+
+        # key
+        key_r = pcbnew.FromMM(0.5)
+        key_margin = thick + pcbnew.FromMM(0.5)
+        key_x = -(lim_x - key_r - key_margin)
+        if key_left_top:
+            key_y = -pitch_v * (n_v - 1) / 2
+        elif ntop > nbot:
+            key_y = pitch_v
+        else:
+            key_y = pitch_v / 2
+        self.draw.Circle(key_x, key_y, key_r)
+
+        self.draw.SetLineThickness(thick)
+
         # Courtyard
         self.draw.SetLayer(pcbnew.F_CrtYd)
         if n_v == 0:
