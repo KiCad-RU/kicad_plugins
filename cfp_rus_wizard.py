@@ -229,24 +229,6 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
         self.draw.Line(-lim_x, -lim_y, -lim_x, lim_y)
         self.draw.Line(lim_x, -lim_y, lim_x, lim_y)
 
-        # pins
-        # horizontal
-        if n_h != 0 and inst_gap_v > fab_margin:
-            top_x = -pitch_h * (n_h - 1) / 2
-            lpin = (install_size_v - package_height) / 2 - fab_margin
-            for i in range(0, n_h):
-                pin_x = top_x + pitch_h * i
-                self.draw.VLine(pin_x, -package_height / 2, -lpin)
-                self.draw.VLine(pin_x, package_height / 2, lpin)
-        # vertical
-        if n_v != 0 and inst_gap_h > fab_margin:
-            top_y = -pitch_v * (n_v - 1) / 2
-            lpin = (install_size_h - package_width) / 2 - fab_margin
-            for i in range(0, n_v):
-                pin_y = top_y + pitch_v * i
-                self.draw.HLine(-package_width / 2, pin_y, -lpin)
-                self.draw.HLine(package_width / 2, pin_y, lpin)
-
         # key
         key_r = pcbnew.FromMM(0.5)
         key_margin = thick + pcbnew.FromMM(0.5)
