@@ -267,7 +267,10 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
 
         # Reference and Value
         text_size = self.GetTextSize()  # IPC nominal
-        text_y = size_y / 2 + text_size
+        if n_h == 0:
+            text_y = lim_y + text_size
+        else:
+            text_y = install_size_v / 2 + text_size
 
         self.draw.Value(0, text_y, text_size)
         self.draw.Reference(0, -text_y, text_size)
