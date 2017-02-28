@@ -214,6 +214,7 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
         self.draw.SetLayer(pcbnew.F_Fab)
         thick = pcbnew.FromMM(0.1)
         self.draw.SetLineThickness(thick)
+        key_len = pcbnew.FromMM(1.0)
         fab_margin = thick
         lim_x = package_width / 2
         lim_y = package_height / 2
@@ -222,24 +223,24 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
         inst_gap_v = (install_size_v - package_height) / 2
         inst_gap_h = (install_size_h - package_width) / 2
 
-        # top and bottom
-        self.draw.Line(-lim_x, -lim_y, lim_x, -lim_y)
-        self.draw.Line(-lim_x, lim_y, lim_x, lim_y)
-        # left and right
-        self.draw.Line(-lim_x, -lim_y, -lim_x, lim_y)
-        self.draw.Line(lim_x, -lim_y, lim_x, lim_y)
-
-        # key
-        key_r = pcbnew.FromMM(0.5)
-        key_margin = thick + pcbnew.FromMM(0.5)
-        key_x = -(lim_x - key_r - key_margin)
+        # top and left with key
         if key_left_top:
-            key_y = -pitch_v * (n_v - 1) / 2
-        elif ntop > nbot:
-            key_y = pitch_v
+            self.draw.Line(-lim_x + key_len, -lim_y, lim_x, -lim_y)
+            self.draw.Line(-lim_x, -lim_y + key_len, -lim_x, lim_y)
+            self.draw.Line(-lim_x + key_len, -lim_y, -lim_x, -lim_y + key_len)
         else:
-            key_y = pitch_v / 2
-        self.draw.Circle(key_x, key_y, key_r)
+            self.draw.Line(-lim_x, -lim_y, lim_x, -lim_y)
+            self.draw.Line(-lim_x, -lim_y, -lim_x, lim_y)
+            if ntop > nbot:
+                key_y = pitch_v
+            else:
+                key_y = pitch_v / 2
+            self.draw.Line(-lim_x, key_y, -lim_x + key_len, key_y)
+
+        # bottom
+        self.draw.Line(-lim_x, lim_y, lim_x, lim_y)
+        # right
+        self.draw.Line(lim_x, -lim_y, lim_x, lim_y)
 
         self.draw.SetLineThickness(thick)
 
