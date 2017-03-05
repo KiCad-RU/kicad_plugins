@@ -230,12 +230,14 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
             self.draw.Line(-lim_x + key_len, -lim_y, -lim_x, -lim_y + key_len)
         else:
             self.draw.Line(-lim_x, -lim_y, lim_x, -lim_y)
-            self.draw.Line(-lim_x, -lim_y, -lim_x, lim_y)
             if ntop > nbot:
                 key_y = pitch_v
             else:
                 key_y = pitch_v / 2
-            self.draw.Line(-lim_x, key_y, -lim_x + key_len, key_y)
+            self.draw.Line(-lim_x, -lim_y, -lim_x, key_y - key_len)
+            self.draw.Line(-lim_x, key_y - key_len, -lim_x + key_len, key_y)
+            self.draw.Line(-lim_x + key_len, key_y, -lim_x, key_y + key_len)
+            self.draw.Line(-lim_x, key_y + key_len, -lim_x, lim_y)
 
         # bottom
         self.draw.Line(-lim_x, lim_y, lim_x, lim_y)
