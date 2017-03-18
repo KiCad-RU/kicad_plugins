@@ -86,9 +86,12 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
 
         v_pad = PA.PadMaker(self.module).SMDPad(pad_width, pad_length,
                                                 shape=pcbnew.PAD_SHAPE_RECT)
+        v_pad.SetLayerSet(v_pad.ConnSMDMask())
+
         h_pad = PA.PadMaker(self.module).SMDPad(pad_width, pad_length,
                                                 shape=pcbnew.PAD_SHAPE_RECT,
                                                 rot_degree=90.0)
+        h_pad.SetLayerSet(h_pad.ConnSMDMask())
 
         v_pos = (install_size_v - pad_length) / 2
         h_pos = (install_size_h - pad_length) / 2
