@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-''' KiCad PCBNew Action Plugin for generating Pos files'''
+''' KiCad PCBNew Action Plugin for generating pos files'''
 
 import os
 import pcbnew
@@ -25,10 +25,10 @@ import re
 import kicadsch
 
 
-EOL = '\r\n'
-SEP = ' '
-HEADER = ('Ref', 'Type', 'Val', 'Type_Val', 'Package', 'PosX', 'PosY', 'Rot',
-          'Side')
+EOL = u'\r\n'
+SEP = u' '
+HEADER = (u'Ref', u'Type', u'Val', u'Type_Val', u'Package', u'PosX', u'PosY',
+          u'Rot', u'Side')
 
 REF = 0
 TYPE = 1
@@ -137,8 +137,8 @@ class gen_pos_file(pcbnew.ActionPlugin):
                 continue
 
             reference = module.GetReference()
-            value = module.GetValue().encode('utf8')
-            package = str(module.GetFPID().GetLibItemName())
+            value = module.GetValue()
+            package = str(module.GetFPID().GetLibItemName()).decode('utf8')
 
             pos = module.GetPosition() - origin
             pos_x = pcbnew.ToMM(pos.x)
@@ -152,7 +152,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
                 placement_info = self.placement_info_top
 
             placement_info.append(
-                    [reference, '', value, package, pos_x, pos_y, rotation])
+                    [reference, u'', value, package, pos_x, pos_y, rotation])
 
         self.sort_placement_info_by_ref()
 
@@ -162,12 +162,12 @@ class gen_pos_file(pcbnew.ActionPlugin):
             placement_info.sort(key=self.get_ref_num)
             placement_info.sort(key=self.get_ref_group)
 
-    def get_ref_group(self, comp):
-        return re.sub('[0-9]*$', '', comp[REF])
+    def get_ref_group(self, item):
+        return re.sub('[0-9]*$', u'', item[REF])
 
-    def get_ref_num(self, comp):
+    def get_ref_num(self, item):
         try:
-            return int(re.findall('[0-9]*$', comp[REF])[0])
+            return int(re.findall('[0-9]*$', item[REF])[0])
         except:
             return 0
 
@@ -227,13 +227,13 @@ class gen_pos_file(pcbnew.ActionPlugin):
     def conform_fields_to_restrictions(self):
         for placement_info in (self.placement_info_top,
                                self.placement_info_bottom):
-            for comp in placement_info:
-                comp[TYPE] = self.translate_field(comp[TYPE])
-                comp[VAL] = self.translate_field(comp[VAL])
-                comp[PACKAGE] = self.translate_field(comp[PACKAGE])
+            for item in placement_info:
+                item[TYPE] = self.translate_field(item[TYPE])
+                item[VAL] = self.translate_field(item[VAL])
+                item[PACKAGE] = self.translate_field(item[PACKAGE])
 
     def translate_field(self, field):
-        return field.decode('utf8').translate(TRANSLATE_TABLE).encode('utf8')
+        return field.translate(TRANSLATE_TABLE)
 
     def save_placement_info(self):
         board = pcbnew.GetBoard()
@@ -248,28 +248,23 @@ class gen_pos_file(pcbnew.ActionPlugin):
                                self.placement_info_bottom):
             is_top = (placement_info is self.placement_info_top)
             if is_top:
-                side = 'top'
+                side = u'top'
             else:
-                side = 'bottom'
+                side = u'bottom'
 
-            for comp in placement_info:
-                pos_file.write(comp[REF])
-                pos_file.write(SEP + comp[TYPE])
-                pos_file.write(SEP + comp[VAL])
-                pos_file.write(SEP + comp[TYPE] + '_' + comp[VAL])
-                pos_file.write(SEP + comp[PACKAGE])
-                pos_file.write(SEP + str(comp[POSX]))
-                pos_file.write(SEP + str(comp[POSY]))
-                pos_file.write(SEP + str(comp[ROT]))
-                pos_file.write(SEP + side)
-                pos_file.write(EOL)
+            for item in placement_info:
+                pos_file.write(item[REF] + SEP + item[TYPE] + SEP + item[VAL] +
+                               SEP + item[TYPE] + u'_' + item[VAL] +
+                               SEP + item[PACKAGE] +
+                               SEP + str(item[POSX]) + SEP + str(item[POSY]) +
+                               SEP + str(item[ROT]) + SEP + side + EOL);
 
         pos_file.close()
 
     def get_header_str(self):
         hlen = len(HEADER)
 
-        hstr = '#'
+        hstr = u'#'
         for i in range(0, hlen):
             hstr += HEADER[i]
             if i != hlen - 1:
