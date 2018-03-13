@@ -5,3 +5,6 @@ Contain:
 
 ## Install
 See [KiCad PCBNew documentation](http://docs.kicad-pcb.org/stable/en/pcbnew.html#Footprint_Wizards)
+
+## Links
+File kicadsch.py from [kicadbom2spec](https://launchpad.net/kicadbom2spec)
