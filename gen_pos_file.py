@@ -35,10 +35,13 @@ POSY = 4
 ROT = 5
 
 TRANSLATE_TABLE = {
-    #TODO replace illegal chars (',', ' ', 'cube', 'plus/minus' and etc)
-    ord(' ') : u'_',
-    ord('"') : u'_',
-    ord(',') : u'.',
+    ord(u' ') : u'_',
+    ord(u'"') : u'_',
+    ord(u',') : u'.',
+    ord(u'¹') : u'^1_',
+    ord(u'²') : u'^2_',
+    ord(u'³') : u'^3_',
+    ord(u'±') : u'+-',
 
     # russian chars
     ord(u'ё') : u'e',
@@ -191,6 +194,10 @@ class gen_pos_file(pcbnew.ActionPlugin):
         for placement_info in (self.placement_info_top,
                                self.placement_info_bottom):
             is_top = (placement_info is self.placement_info_top)
+            if is_top:
+                side = 'top'
+            else:
+                side = 'bottom'
 
             for comp in placement_info:
                 pos_file.write(comp[REF])
@@ -199,13 +206,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
                 pos_file.write(SEP + str(comp[POSX]))
                 pos_file.write(SEP + str(comp[POSY]))
                 pos_file.write(SEP + str(comp[ROT]))
-
-                if is_top:
-                    side = 'top'
-                else:
-                    side = 'bottom'
                 pos_file.write(SEP + side)
-
                 pos_file.write(EOL)
 
         pos_file.close()
