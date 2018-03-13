@@ -1,4 +1,4 @@
-# coding=utf8
+# coding: utf8
 # gen_pos_file.py
 #
 # Copyright (C) 2018 Eldar Khayrullin <eldar.khayrullin@mail.ru>
@@ -22,17 +22,21 @@ import os
 import pcbnew
 import re
 
+import kicadsch
+
 
 EOL = '\r\n'
 SEP = ' '
-HEADER = ('Ref', 'Val', 'Package', 'PosX', 'PosY', 'Rot', 'Side')
+HEADER = ('Ref', 'Type', 'Val', 'Type_Val', 'Package', 'PosX', 'PosY', 'Rot',
+          'Side')
 
 REF = 0
-VAL = 1
-PACKAGE = 2
-POSX = 3
-POSY = 4
-ROT = 5
+TYPE = 1
+VAL = 2
+PACKAGE = 3
+POSX = 4
+POSY = 5
+ROT = 6
 
 TRANSLATE_TABLE = {
     ord(u' ') : u'_',
@@ -148,7 +152,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
                 placement_info = self.placement_info_top
 
             placement_info.append(
-                    [reference, value, package, pos_x, pos_y, rotation])
+                    [reference, '', value, package, pos_x, pos_y, rotation])
 
         self.sort_placement_info_by_ref()
 
@@ -168,14 +172,63 @@ class gen_pos_file(pcbnew.ActionPlugin):
             return 0
 
     def append_user_fields_to_placement_info(self):
-        #TODO read user fields from SCH. '~' as ''.
-        #TODO merge user fields with value
-        pass
+        components = self.get_components()
+        for placement_info in (self.placement_info_top,
+                               self.placement_info_bottom):
+	    for item in placement_info:
+                comp = self.get_component_by_ref(components, item[REF])
+                if comp:
+		    type_str = self.get_user_field(comp, u'Марка') + u'_' + \
+                               self.get_user_field(comp, u'Тип')
+                    item[VAL] += self.get_user_field(comp, u'Класс точности')
+                else:
+                    type_str = u'~'
+
+                item[TYPE] = type_str
+
+    def get_components(self):
+        name = self.get_board_file_name_without_ext() + u'.sch'
+	return self.get_components_from_sch(name)
+
+    def get_components_from_sch(self, name):
+        components = []
+        sch = kicadsch.Schematic(name)
+
+        for item in sch.items:
+            if item.__class__.__name__ == u'Comp':
+                # Skip power symbols
+                if not item.fields[0].text.startswith(u'#'):
+                    components.append(item)
+            elif item.__class__.__name__ == u'Sheet':
+                components.extend(self.get_components_from_sch(item.file_name))
+
+        return components
+
+    def get_component_by_ref(self, components, ref):
+       for comp in components:
+           if self.get_ref_field(comp) == ref:
+               return comp
+       return None
+
+    def get_ref_field(self, comp):
+        return comp.fields[0].text
+
+    def get_user_field(self, comp, name):
+	for field in comp.fields:
+	    if hasattr(field, u'name'):
+		if field.name.decode('utf8') == name:
+		    return field.text.decode('utf8')
+	return u''
+
+    def get_board_file_name_without_ext(self):
+        board = pcbnew.GetBoard()
+        return os.path.splitext(board.GetFileName())[0]
 
     def conform_fields_to_restrictions(self):
         for placement_info in (self.placement_info_top,
                                self.placement_info_bottom):
             for comp in placement_info:
+                comp[TYPE] = self.translate_field(comp[TYPE])
                 comp[VAL] = self.translate_field(comp[VAL])
                 comp[PACKAGE] = self.translate_field(comp[PACKAGE])
 
@@ -185,7 +238,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
     def save_placement_info(self):
         board = pcbnew.GetBoard()
 
-        name = os.path.splitext(board.GetFileName())[0] + '.pos'
+        name = self.get_board_file_name_without_ext() + u'.pos'
         pos_file = open(name, mode='wb')
 
         s = self.get_header_str()
@@ -201,7 +254,9 @@ class gen_pos_file(pcbnew.ActionPlugin):
 
             for comp in placement_info:
                 pos_file.write(comp[REF])
+                pos_file.write(SEP + comp[TYPE])
                 pos_file.write(SEP + comp[VAL])
+                pos_file.write(SEP + comp[TYPE] + '_' + comp[VAL])
                 pos_file.write(SEP + comp[PACKAGE])
                 pos_file.write(SEP + str(comp[POSX]))
                 pos_file.write(SEP + str(comp[POSY]))
