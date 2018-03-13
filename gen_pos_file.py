@@ -40,7 +40,6 @@ ROT = 6
 
 TRANSLATE_TABLE = {
     ord(u' ') : u'_',
-    ord(u'"') : u'_',
     ord(u',') : u'.',
     ord(u'¹') : u'^1_',
     ord(u'²') : u'^2_',
@@ -178,8 +177,10 @@ class gen_pos_file(pcbnew.ActionPlugin):
 	    for item in placement_info:
                 comp = self.get_component_by_ref(components, item[REF])
                 if comp:
-		    type_str = self.get_user_field(comp, u'Марка') + u'_' + \
+                    type_str = self.get_user_field(comp, u'Марка') + u'_' + \
                                self.get_user_field(comp, u'Тип')
+                    type_str = type_str.replace('\\"', '"')
+
                     item[VAL] += self.get_user_field(comp, u'Класс точности')
                 else:
                     type_str = u'~'
