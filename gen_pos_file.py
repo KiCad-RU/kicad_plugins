@@ -201,7 +201,9 @@ class gen_pos_file(pcbnew.ActionPlugin):
                 if not item.fields[0].text.startswith(u'#'):
                     components.append(item)
             elif item.__class__.__name__ == u'Sheet':
-                components.extend(self.get_components_from_sch(item.file_name))
+                dirname = os.path.dirname(name)
+                filename = os.path.join(dirname, item.file_name)
+                components.extend(self.get_components_from_sch(filename))
 
         return components
 
