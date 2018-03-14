@@ -136,6 +136,9 @@ class gen_pos_file(pcbnew.ActionPlugin):
                 continue
 
             reference = module.GetReference()
+            if self.is_non_annotated_ref(reference):
+                continue
+
             value = module.GetValue()
             package = str(module.GetFPID().GetLibItemName()).decode('utf8')
 
@@ -154,6 +157,9 @@ class gen_pos_file(pcbnew.ActionPlugin):
                     [reference, u'', value, package, pos_x, pos_y, rotation])
 
         self.sort_placement_info_by_ref()
+
+    def is_non_annotated_ref(self, ref):
+        return ref[-1] == u'*'
 
     def sort_placement_info_by_ref(self):
         for placement_info in (self.placement_info_top,
