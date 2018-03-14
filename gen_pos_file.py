@@ -174,7 +174,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
         components = self.get_components()
         for placement_info in (self.placement_info_top,
                                self.placement_info_bottom):
-	    for item in placement_info:
+            for item in placement_info:
                 comp = self.get_component_by_ref(components, item[REF])
                 if comp:
                     type_str = self.get_user_field(comp, u'Марка') + u'_' + \
@@ -189,7 +189,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
 
     def get_components(self):
         name = self.get_board_file_name_without_ext() + u'.sch'
-	return self.get_components_from_sch(name)
+        return self.get_components_from_sch(name)
 
     def get_components_from_sch(self, name):
         components = []
@@ -217,11 +217,11 @@ class gen_pos_file(pcbnew.ActionPlugin):
         return comp.fields[0].text
 
     def get_user_field(self, comp, name):
-	for field in comp.fields:
-	    if hasattr(field, u'name'):
-		if field.name.decode('utf8') == name:
-		    return field.text.decode('utf8')
-	return u''
+        for field in comp.fields:
+            if hasattr(field, u'name'):
+                if field.name.decode('utf8') == name:
+                    return field.text.decode('utf8')
+        return u''
 
     def get_board_file_name_without_ext(self):
         board = pcbnew.GetBoard()
