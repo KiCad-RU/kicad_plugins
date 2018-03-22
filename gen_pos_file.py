@@ -143,7 +143,11 @@ class gen_pos_file(pcbnew.ActionPlugin):
             package = str(module.GetFPID().GetLibItemName()).decode('utf8')
 
             pos = module.GetPosition() - origin
+
             pos_x = pcbnew.ToMM(pos.x)
+            if module.IsFlipped():
+                pos_x = -pos_x
+
             pos_y = -pcbnew.ToMM(pos.y)
 
             rotation = module.GetOrientationDegrees()
