@@ -27,6 +27,8 @@ import kicadsch
 
 EOL = u'\r\n'
 SEP = u' '
+JSEP = u'_'
+EMPTY_FIELD = u'~'
 HEADER = (u'Ref', u'Type', u'Val', u'Type_Val', u'Package', u'PosX', u'PosY',
           u'Rot', u'Side')
 
@@ -119,12 +121,12 @@ TRANSLATE_TABLE = {
 
 class gen_pos_file(pcbnew.ActionPlugin):
     def Run(self):
-        self.update_placement_info()
+        self.get_placement_info()
         self.append_user_fields_to_placement_info()
         self.conform_fields_to_restrictions()
         self.save_placement_info()
 
-    def update_placement_info(self):
+    def get_placement_info(self):
         self.placement_info_top = []
         self.placement_info_bottom = []
 
@@ -187,13 +189,21 @@ class gen_pos_file(pcbnew.ActionPlugin):
             for item in placement_info:
                 comp = self.get_component_by_ref(components, item[REF])
                 if comp:
-                    type_str = self.get_user_field(comp, u'Марка') + u'_' + \
-                               self.get_user_field(comp, u'Тип')
+                    type_str = self.get_user_field(comp, u'Марка')
+                    if type_str == '':
+                        type_str = item[VAL]
+                        item[VAL] = EMPTY_FIELD
+
+                    var_str = self.get_user_field(comp, u'Тип')
+                    if var_str != '':
+                        type_str += JSEP + var_str
+
                     type_str = type_str.replace('\\"', '"')
 
                     item[VAL] += self.get_user_field(comp, u'Класс точности')
                 else:
-                    type_str = u'~'
+                    type_str = item[VAL]
+                    item[VAL] = EMPTY_FIELD
 
                 item[TYPE] = type_str
 
@@ -267,8 +277,12 @@ class gen_pos_file(pcbnew.ActionPlugin):
 
             for item in placement_info:
                 pos_file.write(item[REF] + SEP + item[TYPE] + SEP + item[VAL] +
-                               SEP + item[TYPE] + u'_' + item[VAL] +
-                               SEP + item[PACKAGE] +
+                               SEP + item[TYPE])
+
+                if item[VAL] != EMPTY_FIELD:
+                    pos_file.write(JSEP + item[VAL])
+
+                pos_file.write(SEP + item[PACKAGE] +
                                SEP + str(item[POSX]) + SEP + str(item[POSY]) +
                                SEP + str(item[ROT]) + SEP + side + EOL);
 
