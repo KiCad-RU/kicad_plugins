@@ -192,7 +192,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
                     type_str = self.get_user_field(comp, u'Марка')
                     if type_str == '':
                         type_str = item[VAL]
-                        item[VAL] = EMPTY_FIELD
+                        item[VAL] = ''
 
                     var_str = self.get_user_field(comp, u'Тип')
                     if var_str != '':
@@ -203,7 +203,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
                     item[VAL] += self.get_user_field(comp, u'Класс точности')
                 else:
                     type_str = item[VAL]
-                    item[VAL] = EMPTY_FIELD
+                    item[VAL] = ''
 
                 item[TYPE] = type_str
 
@@ -256,10 +256,13 @@ class gen_pos_file(pcbnew.ActionPlugin):
                 item[PACKAGE] = self.translate_field(item[PACKAGE])
 
     def translate_field(self, field):
-        return field.translate(TRANSLATE_TABLE)
+        if field == '':
+            return ''
+        else:
+            return field.translate(TRANSLATE_TABLE)
 
     def save_placement_info(self):
-        board = pcbnew.GetBoard()
+        self.collect_fields_length_statistic()
 
         name = self.get_board_file_name_without_ext() + u'-' + self.file_postfix + u'.pos'
         pos_file = open(name, mode='wb')
@@ -276,28 +279,93 @@ class gen_pos_file(pcbnew.ActionPlugin):
                 side = u'bottom'
 
             for item in placement_info:
-                pos_file.write(item[REF] + SEP + item[TYPE] + SEP + item[VAL] +
-                               SEP + item[TYPE])
+                pos_file.write(item[REF])
+                num_sep = self.fields_max_length[REF] - len(item[REF]) + 1
+                pos_file.write(self.get_separators_str(num_sep))
 
-                if item[VAL] != EMPTY_FIELD:
+                pos_file.write(item[TYPE])
+                num_sep = self.fields_max_length[TYPE] - len(item[TYPE]) + 1
+                pos_file.write(self.get_separators_str(num_sep))
+
+                num_sep = self.fields_max_length[VAL] + 1
+                if item[VAL] == '':
+                    pos_file.write(EMPTY_FIELD)
+                    num_sep -= 1
+                else:
+                    pos_file.write(item[VAL])
+                    num_sep -= len(item[VAL])
+                pos_file.write(self.get_separators_str(num_sep))
+
+                pos_file.write(item[TYPE])
+                num_sep = self.fields_max_length[TYPE] - len(item[TYPE]) + \
+                          self.fields_max_length[VAL] + 1
+                if item[VAL] != '':
                     pos_file.write(JSEP + item[VAL])
+                    num_sep -= len(item[VAL]) + 1
+                pos_file.write(self.get_separators_str(num_sep))
 
-                pos_file.write(SEP + item[PACKAGE] +
-                               SEP + str(item[POSX]) + SEP + str(item[POSY]) +
-                               SEP + str(item[ROT]) + SEP + side + EOL);
+                pos_file.write(item[PACKAGE])
+                num_sep = self.fields_max_length[PACKAGE] - len(item[PACKAGE]) + 1
+                pos_file.write(self.get_separators_str(num_sep))
+
+                pos_file.write(str(item[POSX]))
+                num_sep = self.fields_max_length[POSX] - len(str(item[POSX])) + 1
+                pos_file.write(self.get_separators_str(num_sep))
+
+                pos_file.write(str(item[POSY]))
+                num_sep = self.fields_max_length[POSY] - len(str(item[POSY])) + 1
+                pos_file.write(self.get_separators_str(num_sep))
+
+                pos_file.write(str(item[ROT]))
+                num_sep = self.fields_max_length[ROT] - len(str(item[ROT])) + 1
+                pos_file.write(self.get_separators_str(num_sep))
+
+                pos_file.write(side + EOL)
 
         pos_file.close()
 
+    def collect_fields_length_statistic(self):
+        self.fields_max_length = []
+        for i in range(0, 3):
+            self.fields_max_length.append(len(HEADER[i]))
+        for i in range(4, 8):
+            self.fields_max_length.append(len(HEADER[i]))
+        self.fields_max_length[0] += 1
+
+        for placement_info in (self.placement_info_top,
+                               self.placement_info_bottom):
+            for item in placement_info:
+                for field in range(0, len(placement_info[0])):
+                    cur_len = len(str(item[field]))
+                    if self.fields_max_length[field] < cur_len:
+                        self.fields_max_length[field] = cur_len
+
     def get_header_str(self):
         hlen = len(HEADER)
+        sep_fills = []
+        sep_fills.append(self.fields_max_length[REF] - 1 - len(HEADER[0]) + 1)
+        sep_fills.append(self.fields_max_length[TYPE] - len(HEADER[1]) + 1)
+        sep_fills.append(self.fields_max_length[VAL] - len(HEADER[2]) + 1)
+        sep_fills.append(self.fields_max_length[TYPE] + self.fields_max_length[VAL] + \
+                         1 - len(HEADER[3]))
+        sep_fills.append(self.fields_max_length[PACKAGE] - len(HEADER[4]) + 1)
+        sep_fills.append(self.fields_max_length[POSX] - len(HEADER[5]) + 1)
+        sep_fills.append(self.fields_max_length[POSY] - len(HEADER[6]) + 1)
+        sep_fills.append(self.fields_max_length[ROT] - len(HEADER[7]) + 1)
+        sep_fills.append(0)
 
         hstr = u'#'
         for i in range(0, hlen):
             hstr += HEADER[i]
-            if i != hlen - 1:
-                hstr += SEP
+            hstr += self.get_separators_str(sep_fills[i])
 
         return hstr
+
+    def get_separators_str(self, n):
+        separators = ''
+        for i in range(0, n):
+            separators += SEP
+        return separators
 
 
 class gen_pos_file_smd(gen_pos_file):
