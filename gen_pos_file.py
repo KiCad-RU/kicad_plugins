@@ -261,7 +261,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
     def save_placement_info(self):
         board = pcbnew.GetBoard()
 
-        name = self.get_board_file_name_without_ext() + u'.pos'
+        name = self.get_board_file_name_without_ext() + u'-' + self.file_postfix + u'.pos'
         pos_file = open(name, mode='wb')
 
         s = self.get_header_str()
@@ -306,6 +306,8 @@ class gen_pos_file_smd(gen_pos_file):
         self.category = "Generates file"
         self.description = "Generates SMD+Virtual components pos file"
 
+        self.file_postfix = u"SMD"
+
     def needs_include(self, module):
         attr = module.GetAttributes()
         return (attr == pcbnew.MOD_CMS) or (attr == pcbnew.MOD_VIRTUAL)
@@ -316,6 +318,8 @@ class gen_pos_file_all(gen_pos_file):
         self.name = "Generate pos file (ALL)"
         self.category = "Generates file"
         self.description = "Generates all components pos file"
+
+        self.file_postfix = u"ALL"
 
     def needs_include(self, module):
         return True
