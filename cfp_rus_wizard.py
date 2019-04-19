@@ -280,6 +280,15 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
         self.draw.Value(0, text_y, text_size)
         self.draw.Reference(0, -text_y, text_size)
 
+        txt = pcbnew.TEXTE_MODULE(self.module)
+        txt.SetText('%R')
+        txt.SetPosition(pcbnew.wxPoint(pcbnew.FromMM(0), pcbnew.FromMM(0)))
+        txt.SetHorizJustify(pcbnew.GR_TEXT_HJUSTIFY_CENTER)
+        txt.SetTextSize(pcbnew.wxSize(text_size, text_size))
+        txt.SetThickness(pcbnew.FromMM(0.15))
+        txt.SetLayer(pcbnew.F_Fab)
+        self.module.Add(txt)
+
         # Set module attribute
         self.module.SetAttributes(pcbnew.MOD_DEFAULT)
 
