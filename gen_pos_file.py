@@ -142,7 +142,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
                 continue
 
             value = module.GetValue()
-            package = str(module.GetFPID().GetLibItemName()).decode('utf8')
+            package = str(module.GetFPID().GetLibItemName())
 
             pos = module.GetPosition() - origin
 
@@ -239,8 +239,8 @@ class gen_pos_file(pcbnew.ActionPlugin):
     def get_user_field(self, comp, name):
         for field in comp.fields:
             if hasattr(field, u'name'):
-                if field.name.decode('utf8') == name:
-                    return field.text.decode('utf8')
+                if field.name == name:
+                    return field.text
         return u''
 
     def get_board_file_name_without_ext(self):
@@ -265,7 +265,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
         self.collect_fields_length_statistic()
 
         name = self.get_board_file_name_without_ext() + u'-' + self.file_postfix + u'.pos'
-        pos_file = open(name, mode='wb')
+        pos_file = open(name, mode='w')
 
         s = self.get_header_str()
         pos_file.write(s + EOL)

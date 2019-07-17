@@ -54,14 +54,13 @@ class Schematic:
         self.items = []
 
         sch_file = codecs.open(self.sch_name, 'r', 'utf-8')
-        first_line = sch_file.readline().encode('utf-8')
+        first_line = sch_file.readline()
         first_line = first_line.replace('\n', '')
         if first_line.startswith(self.EESCHEMA_FILE_STAMP):
             self.version = int(split_line(first_line)[-1])
         else:
             return
         for sch_line in sch_file:
-            sch_line = sch_line.encode('utf-8')
             if sch_line.startswith('$'):
                 if sch_line.startswith('$EndSCHEMATC'):
                     return
@@ -70,7 +69,7 @@ class Schematic:
                     item_val = ''
                     while not sch_line.startswith('$End'):
                         item_val += sch_line
-                        sch_line = sch_file.readline().encode('utf-8')
+                        sch_line = sch_file.readline()
                     if item.startswith('$Descr'):
                         self.descr = self.Descr(item_val)
                     elif item.startswith('$Comp'):
@@ -84,13 +83,13 @@ class Schematic:
             elif sch_line.startswith('NoConn'):
                 self.items.append(self.Connection(sch_line))
             elif sch_line.startswith('Text'):
-                sch_line += sch_file.readline().encode('utf-8')
+                sch_line += sch_file.readline()
                 self.items.append(self.Text(sch_line))
             elif sch_line.startswith('Wire'):
-                sch_line += sch_file.readline().encode('utf-8')
+                sch_line += sch_file.readline()
                 self.items.append(self.Wire(sch_line))
             elif sch_line.startswith('Entry'):
-                sch_line += sch_file.readline().encode('utf-8')
+                sch_line += sch_file.readline()
                 self.items.append(self.Entry(sch_line))
             elif sch_line.startswith('LIBS:'):
                 self.libs.add(sch_line)
@@ -112,7 +111,7 @@ class Schematic:
                      head = self.SCHEMATIC_HEAD_STRING,
                      version = self.version
                      )
-        sch_file.write(first_line.decode('utf-8'))
+        sch_file.write(first_line)
 
         self.libs.save(sch_file)
 
@@ -161,7 +160,7 @@ class Schematic:
                 line = 'LIBS:{lib}\n'.format(
                        lib = lib
                        )
-                sch_file.write(line.decode('utf-8'))
+                sch_file.write(line)
 
 
     class Eelayer:
@@ -202,7 +201,7 @@ class Schematic:
                    nn = self.nn,
                    mm = self.mm
                    )
-            sch_file.write(line.decode('utf-8'))
+            sch_file.write(line)
 
 
     class Descr:
@@ -298,7 +297,7 @@ class Schematic:
                     comment3 = self.comment3,
                     comment4 = self.comment4
                     )
-            sch_file.write(descr.decode('utf-8'))
+            sch_file.write(descr)
 
 
     class Comp:
@@ -389,7 +388,7 @@ class Schematic:
                        pos_x = self.pos_x,
                        pos_y = self.pos_y
                        )
-            sch_file.write(comp_str.decode('utf-8'))
+            sch_file.write(comp_str)
             if hasattr(self, 'path_and_ref'):
                 for item in (self.path_and_ref):
                     path_and_ref_str = 'AR Path="{path}" Ref="{ref}"  Part="{part}" \n'.format(
@@ -397,7 +396,7 @@ class Schematic:
                             ref = item[1],
                             part = item[2]
                             )
-                    sch_file.write(path_and_ref_str.decode('utf-8'))
+                    sch_file.write(path_and_ref_str)
             for field in self.fields:
                 field.save(sch_file)
             comp_str = '\t{unit:<4} {pos_x:<4} {pos_y:<4}\n' \
@@ -408,7 +407,7 @@ class Schematic:
                        pos_y = self.pos_y,
                        or_m = self.orient_matrix
                        )
-            sch_file.write(comp_str.decode('utf-8'))
+            sch_file.write(comp_str)
 
 
         class Field:
@@ -510,7 +509,7 @@ class Schematic:
                             bold = {True:'B', False:'N'}[self.bold],
                             name = name
                             )
-                sch_file.write(field_str.decode('utf-8'))
+                sch_file.write(field_str)
 
 
     class Sheet:
@@ -557,7 +556,7 @@ class Schematic:
                         self.name = parts[1]
                         self.name_size = parts[2]
                     elif int(parts[0][1:]) == 1:
-                        self.file_name = parts[1].decode('utf-8')
+                        self.file_name = parts[1]
                         self.file_name_size = parts[2]
                     elif int(parts[0][1:]) > 1:
                         self.fields.append(self.Field(line))
@@ -586,11 +585,11 @@ class Schematic:
                         file_name = self.file_name,
                         file_name_size = self.file_name_size
                         )
-            sch_file.write(sheet_str.decode('utf-8'))
+            sch_file.write(sheet_str)
             for field in self.fields:
                 field.save(sch_file)
             sheet_str = '$EndSheet\n'
-            sch_file.write(sheet_str.decode('utf-8'))
+            sch_file.write(sheet_str)
 
 
         class Field:
@@ -654,7 +653,7 @@ class Schematic:
                             pos_y = self.pos_y,
                             dim = self.dimension
                             )
-                sch_file.write(field_str.decode('utf-8'))
+                sch_file.write(field_str)
 
 
     class Bitmap:
@@ -733,7 +732,7 @@ class Schematic:
                          scale = '{:.6f}'.format(self.scale),
                          data = data_str
                          )
-            sch_file.write(bitmap_str.decode('utf-8'))
+            sch_file.write(bitmap_str)
 
 
     class Connection:
@@ -777,7 +776,7 @@ class Schematic:
                              pos_x = self.pos_x,
                              pos_y = self.pos_y
                              )
-            sch_file.write(connection_str.decode('utf-8'))
+            sch_file.write(connection_str)
 
 
     class Text:
@@ -844,7 +843,7 @@ class Schematic:
                        bold = self.bold,
                        text = self.text
                        )
-            sch_file.write(text_str.decode('utf-8'))
+            sch_file.write(text_str)
 
 
     class Wire:
@@ -896,7 +895,7 @@ class Schematic:
                        end_x = self.end_x,
                        end_y = self.end_y
                        )
-            sch_file.write(wire_str.decode('utf-8'))
+            sch_file.write(wire_str)
 
 
 
@@ -949,7 +948,7 @@ class Schematic:
                        end_x = self.end_x,
                        end_y = self.end_y
                        )
-            sch_file.write(entry_str.decode('utf-8'))
+            sch_file.write(entry_str)
 
 
 class Library:
@@ -982,19 +981,19 @@ class Library:
         self.components = []
 
         lib_file = codecs.open(self.lib_name, 'r', 'utf-8')
-        first_line = lib_file.readline().encode('utf-8')
+        first_line = lib_file.readline()
         first_line = first_line.replace('\n', '')
         if first_line.startswith(self.LIBFILE_IDENT):
             self.version = float(split_line(first_line)[2])
         else:
             return
         for lib_line in lib_file:
-            lib_line = lib_line.encode('utf-8')
+            lib_line = lib_line
             if lib_line.startswith('DEF'):
                 component_value = ''
                 while not lib_line.startswith('ENDDEF'):
                     component_value += lib_line
-                    lib_line = lib_file.readline().encode('utf-8')
+                    lib_line = lib_file.readline()
                 self.components.append(self.Component(component_value))
             elif lib_line.startswith('#encoding'):
                 self.encoding = split_line(lib_line)[-1].replace('\n', '')
@@ -1017,7 +1016,7 @@ class Library:
                  version = self.version,
                  encoding = self.encoding
                  )
-        lib_file.write(header.decode('utf-8'))
+        lib_file.write(header)
         for components in self.components:
             components.save(lib_file)
         lib_file.write(u'#\n#End Library\n')
@@ -1134,7 +1133,7 @@ class Library:
                             units_locked = {True:'L', False:'F'}[self.units_locked],
                             options = self.option_flag
                             )
-            lib_file.write(component_str.decode('utf-8'))
+            lib_file.write(component_str)
             for field in self.fields:
                 field.save(lib_file)
             component_str = ''
@@ -1146,12 +1145,12 @@ class Library:
                     component_str += ' {}\n'.format(fp)
                 component_str += '$ENDFPLIST\n'
             component_str += 'DRAW\n'
-            lib_file.write(component_str.decode('utf-8'))
+            lib_file.write(component_str)
             for graphic_element in self.graphic_elements:
                 graphic_element.save(lib_file)
             component_str = 'ENDDRAW\n' \
                             'ENDDEF\n'
-            lib_file.write(component_str.decode('utf-8'))
+            lib_file.write(component_str)
 
 
         class Field:
@@ -1247,7 +1246,7 @@ class Library:
                             bold = {True:'B', False:'N'}[self.bold],
                             name = name
                             )
-                lib_file.write(field_str.decode('utf-8'))
+                lib_file.write(field_str)
 
 
         class Polygon:
@@ -1304,7 +1303,7 @@ class Library:
                 for point in self.points:
                     polygon_str += '  {p[0]} {p[1]}'.format(p = point)
                 polygon_str += ' {}\n'.format(self.fill)
-                lib_file.write(polygon_str.decode('utf-8'))
+                lib_file.write(polygon_str)
 
 
         class Rectangle:
@@ -1362,7 +1361,7 @@ class Library:
                                 thickness = self.thickness,
                                 fill = self.fill
                                 )
-                lib_file.write(rectangle_str.decode('utf-8'))
+                lib_file.write(rectangle_str)
 
 
         class Circle:
@@ -1417,7 +1416,7 @@ class Library:
                              thickness = self.thickness,
                              fill = self.fill
                              )
-                lib_file.write(circle_str.decode('utf-8'))
+                lib_file.write(circle_str)
 
 
         class Arc:
@@ -1490,7 +1489,7 @@ class Library:
                           end_x = self.end_x,
                           end_y = self.end_y
                           )
-                lib_file.write(arc_str.decode('utf-8'))
+                lib_file.write(arc_str)
 
 
         class Text:
@@ -1575,7 +1574,7 @@ class Library:
                            hjustify = self.hjustify,
                            vjustify = self.vjustify
                            )
-                lib_file.write(text_str.decode('utf-8'))
+                lib_file.write(text_str)
 
 
         class Pin:
@@ -1671,7 +1670,7 @@ class Library:
                           el_type = self.electric_type,
                           shape = shape
                           )
-                lib_file.write(pin_str.decode('utf-8'))
+                lib_file.write(pin_str)
 
 
 def split_line(str_to_split):
