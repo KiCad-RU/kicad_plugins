@@ -102,7 +102,7 @@ class sch_values_hide_unhide(pcbnew.ActionPlugin):
             name = HIDDEN_VALUE_MARK
         )
 
-        item.fields.append(kicadsch.Schematic.Comp.Field(field_str))
+        item.fields.append(kicadsch.Schematic.Comp.Field(item, field_str))
 
     def unmark_item_as_hidden(self, item):
         for i in range(len(item.fields)):
