@@ -373,6 +373,7 @@ class gen_pos_file_smd(gen_pos_file):
         self.name = "Generate pos file (SMD+Virtual)"
         self.category = "Generates file"
         self.description = "Generates SMD+Virtual components pos file"
+        self.icon_file_name = os.path.abspath(os.path.splitext(__file__)[0]) + '_smd_virtual' + '.svg'
 
         self.file_postfix = u"SMD"
 
@@ -386,6 +387,7 @@ class gen_pos_file_all(gen_pos_file):
         self.name = "Generate pos file (ALL)"
         self.category = "Generates file"
         self.description = "Generates all components pos file"
+        self.icon_file_name = os.path.abspath(os.path.splitext(__file__)[0]) + '_all' + '.svg'
 
         self.file_postfix = u"ALL"
 

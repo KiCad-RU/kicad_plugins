@@ -34,6 +34,7 @@ class sch_values_hide_unhide(pcbnew.ActionPlugin):
         self.name = "Hide/unhide values in sch files"
         self.category = "Modify files"
         self.description = "Hide/unhide values in sch files"
+        self.icon_file_name = os.path.abspath(os.path.splitext(__file__)[0]) + '.svg'
 
     def Run(self):
         name = self.get_board_file_name_without_ext() + u'.sch'

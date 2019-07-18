@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32px"
+   height="32px"
+   viewBox="0 0 32 32"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="sch_hide_unhide_values.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="11.313708"
+     inkscape:cx="8.7055462"
+     inkscape:cy="25.774609"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1853"
+     inkscape:window-height="1053"
+     inkscape:window-x="67"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:grid-bbox="true" />
+  <defs
+     id="defs847">
+    <linearGradient
+       id="linearGradient1418"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#fffffe;stop-opacity:1;"
+         offset="0"
+         id="stop1416" />
+    </linearGradient>
+  </defs>
+  <metadata
+     id="metadata850">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:groupmode="layer"
+     inkscape:label="Layer 1">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:#a00000;stroke-width:0.94488192;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect1422"
+       width="22"
+       height="9"
+       x="5.0090218"
+       y="11.7245" />
+    <rect
+       style="fill:#a00000;fill-opacity:1;stroke:#a00000;stroke-width:0.94488192;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect1426"
+       width="3"
+       height="0.25"
+       x="1.071522"
+       y="16.099501" />
+    <rect
+       style="fill:#a00000;fill-opacity:1;stroke:#a00000;stroke-width:0.94488192;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect1426-9"
+       width="3"
+       height="0.25"
+       x="27.928478"
+       y="16.099501" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:6.66666651px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+       x="7.1104202"
+       y="18.524305"
+       id="text1448"><tspan
+         sodipodi:role="line"
+         x="7.1104202"
+         y="18.524305"
+         id="tspan1450"
+         style="fill:#323232;fill-opacity:1">Value</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#a00000;fill-opacity:1;stroke:none;stroke-width:0.18897638;stroke-miterlimit:4;stroke-dasharray:none"
+       x="8.2616272"
+       y="9.2435293"
+       id="text1454"><tspan
+         sodipodi:role="line"
+         id="tspan1452"
+         x="8.2616272"
+         y="9.2435293"
+         style="font-size:6.66666651px;fill:#a00000;fill-opacity:1;stroke-width:0.18897638;stroke-miterlimit:4;stroke-dasharray:none;stroke:#ffffff;stroke-opacity:1">Hide</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#a00000;fill-opacity:1;stroke:none;stroke-width:0.18897638;stroke-miterlimit:4;stroke-dasharray:none"
+       x="4.1323948"
+       y="27.727173"
+       id="text1454-6"><tspan
+         sodipodi:role="line"
+         id="tspan1452-2"
+         x="4.1323948"
+         y="27.727173"
+         style="font-size:6.66666651px;fill:#a00000;fill-opacity:1;stroke-width:0.18897638;stroke-miterlimit:4;stroke-dasharray:none;stroke:#ffffff;stroke-opacity:1">Unhide</tspan></text>
+  </g>
+</svg>
