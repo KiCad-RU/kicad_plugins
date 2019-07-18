@@ -494,7 +494,7 @@ class Schematic:
                     vtext = self.text
                 name = ''
                 if hasattr(self, 'name'):
-                    name = ' "{}"'.format(self.name)
+                    name = ' "{name}"'.format(name=self.name)
                 field_str = 'F {number} "{text}" {orient} {pos_x:<3} {pos_y:<3} {size:<3} {flags} {hjustify} {vjustify}{italic}{bold}{name}\n'.format(
                             number = self.number,
                             text = vtext,
