@@ -2,6 +2,7 @@
 Contain:
 - Footprint Wizard Plugin for generating Russia packages
 - PCBNew Action Plugin for generating Pos files
+- PCBNew Action Plugin for hide/unhide project Sch Value fields (except Power Symbols)
 
 ## Install
 See [KiCad PCBNew documentation](http://docs.kicad-pcb.org/stable/en/pcbnew.html#Footprint_Wizards)
