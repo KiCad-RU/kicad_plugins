@@ -18,11 +18,11 @@
 
 ''' KiCad PCBNew Action Plugin for hide and unhide of sch values '''
 
+import kicadsch
 import os
 import pcbnew
 import re
-
-import kicadsch
+import sys
 
 
 VALUE_FIELD_NUM = 1
@@ -37,81 +37,88 @@ class sch_values_hide_unhide(pcbnew.ActionPlugin):
         self.icon_file_name = os.path.abspath(os.path.splitext(__file__)[0]) + '.svg'
 
     def Run(self):
-        name = self.get_board_file_name_without_ext() + u'.sch'
-        self.process_sch(name)
-
-    def get_board_file_name_without_ext(self):
         board = pcbnew.GetBoard()
-        return os.path.splitext(board.GetFileName())[0]
+        process_board(board)
 
-    def process_sch(self, name):
-        sch = kicadsch.Schematic(name)
+def process_board(board):
+    name = get_board_file_name_without_ext(board) + u'.sch'
+    process_sch(name)
 
-        for item in sch.items:
-            if item.__class__.__name__ == u'Comp':
-                # Skip power symbols
-                if not item.fields[0].text.startswith(u'#'):
-                    self.toggle_visibility(item)
-            elif item.__class__.__name__ == u'Sheet':
-                sheet_name = self.get_sheet_name(name, item)
-                self.process_sch(sheet_name)
+def get_board_file_name_without_ext(board):
+    return os.path.splitext(board.GetFileName())[0]
 
-        sch.save()
+def process_sch(name):
+    sch = kicadsch.Schematic(name)
 
-    def get_sheet_name(self, sch_name, sheet):
-        dir_name = os.path.dirname(sch_name)
-        return os.path.join(dir_name, sheet.file_name)
+    for item in sch.items:
+        if item.__class__.__name__ == u'Comp':
+            # Skip power symbols
+            if not item.fields[0].text.startswith(u'#'):
+                toggle_visibility(item)
+        elif item.__class__.__name__ == u'Sheet':
+            sheet_name = get_sheet_name(name, item)
+            process_sch(sheet_name)
 
-    # Don't touch originally hidden value field
-    def toggle_visibility(self, item):
-        if self.is_value_early_hidden(item):
-            self.unhide_value(item)
-            self.unmark_item_as_hidden(item)
-        elif self.is_value_visible(item):
-            self.hide_value(item)
-            self.mark_item_as_hidden(item)
+    sch.save()
 
-    def is_value_visible(self, item):
-        return item.fields[VALUE_FIELD_NUM].flags[-1] == '0'
+def get_sheet_name(sch_name, sheet):
+    dir_name = os.path.dirname(sch_name)
+    return os.path.join(dir_name, sheet.file_name)
 
-    def is_value_early_hidden(self, item):
-        for field in item.fields:
-            if self.is_field_name_eq(field, HIDDEN_VALUE_MARK):
-                return True
-        return False
+# Don't touch originally hidden value field
+def toggle_visibility(item):
+    if is_value_early_hidden(item):
+        unhide_value(item)
+        unmark_item_as_hidden(item)
+    elif is_value_visible(item):
+        hide_value(item)
+        mark_item_as_hidden(item)
 
-    def is_field_name_eq(self, field, name):
-        return hasattr(field, u'name') and field.name == name
+def is_value_visible(item):
+    return item.fields[VALUE_FIELD_NUM].flags[-1] == '0'
 
-    def hide_value(self, item, set=True):
-        if set:
-            flag = '1'
-        else:
-            flag = '0'
+def is_value_early_hidden(item):
+    for field in item.fields:
+        if is_field_name_eq(field, HIDDEN_VALUE_MARK):
+            return True
+    return False
 
-        item.fields[VALUE_FIELD_NUM].flags = item.fields[VALUE_FIELD_NUM].flags[:-1] + flag
+def is_field_name_eq(field, name):
+    return hasattr(field, u'name') and field.name == name
 
-    def unhide_value(self, item):
-        self.hide_value(item, set=False)
+def hide_value(item, set=True):
+    if set:
+        flag = '1'
+    else:
+        flag = '0'
 
-    def mark_item_as_hidden(self, item):
-        field_str = 'F {number} "{text}" {orient} {pos_x:<3} {pos_y:<3} {size:<3} {flags} {hjustify} {vjustify}{italic}{bold} "{name}"'.format(
-            number = self.get_last_field_number(item) + 1,
-            text = '~', orient = 'H', pos_x = 0, pos_y = 0, size = 60, flags = '0001',
-            hjustify = 'C', vjustify = 'C', italic = 'N', bold = 'N',
-            name = HIDDEN_VALUE_MARK
-        )
+    item.fields[VALUE_FIELD_NUM].flags = item.fields[VALUE_FIELD_NUM].flags[:-1] + flag
 
-        item.fields.append(kicadsch.Schematic.Comp.Field(item, field_str))
+def unhide_value(item):
+    hide_value(item, set=False)
 
-    def unmark_item_as_hidden(self, item):
-        for i in range(len(item.fields)):
-            if self.is_field_name_eq(item.fields[i], HIDDEN_VALUE_MARK):
-                item.fields.pop(i)
-                break
+def mark_item_as_hidden(item):
+    field_str = 'F {number} "{text}" {orient} {pos_x:<3} {pos_y:<3} {size:<3} {flags} {hjustify} {vjustify}{italic}{bold} "{name}"'.format(
+        number = get_last_field_number(item) + 1,
+        text = '~', orient = 'H', pos_x = 0, pos_y = 0, size = 60, flags = '0001',
+        hjustify = 'C', vjustify = 'C', italic = 'N', bold = 'N',
+        name = HIDDEN_VALUE_MARK
+    )
 
-    def get_last_field_number(self, item):
-        return item.fields[-1].number
+    item.fields.append(kicadsch.Schematic.Comp.Field(item, field_str))
+
+def unmark_item_as_hidden(item):
+    for i in range(len(item.fields)):
+        if is_field_name_eq(item.fields[i], HIDDEN_VALUE_MARK):
+            item.fields.pop(i)
+            break
+
+def get_last_field_number(item):
+    return item.fields[-1].number
 
 
-sch_values_hide_unhide().register()
+if __name__ == '__main__':
+    board = pcbnew.LoadBoard(sys.argv[1])
+    process_board(board)
+else:
+    sch_values_hide_unhide().register()
