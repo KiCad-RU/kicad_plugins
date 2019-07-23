@@ -22,8 +22,11 @@ import kicadsch
 import os
 import pcbnew
 import re
+import shutil
 import sys
 
+
+OUTPUT_NAME = 'pos'
 
 EOL = u'\r\n'
 SEP = u' '
@@ -137,6 +140,7 @@ class BoardProcessor():
         self.get_placement_info()
         self.append_user_fields_to_placement_info()
         self.conform_fields_to_restrictions()
+        self.clean_output(self.get_output_abs_path())
         self.save_placement_info()
 
     def get_placement_info(self):
@@ -274,14 +278,19 @@ class BoardProcessor():
         else:
             return field.translate(TRANSLATE_TABLE)
 
+    def clean_output(self, path):
+        if os.path.exists(path):
+            shutil.rmtree(path, ignore_errors=False, onerror=None)
+        os.mkdir(path)
+
     def save_placement_info(self):
         self.collect_fields_length_statistic()
 
-        name = self.get_board_file_name_without_ext() + u'-ALL.pos'
-        pos_file_all = open(name, mode='w')
+        path = self.get_output_abs_path()
+        name = path + os.path.sep + self.get_board_name()
 
-        name = self.get_board_file_name_without_ext() + u'-SMD.pos'
-        pos_file_smd = open(name, mode='w')
+        pos_file_all = open(name + u'-ALL.pos', mode='w')
+        pos_file_smd = open(name + u'-SMD.pos', mode='w')
 
         s = self.get_header_str() + EOL
         pos_file_all.write(s)
@@ -307,6 +316,12 @@ class BoardProcessor():
                     cur_len = len(str(item[field]))
                     if self.fields_max_length[field] < cur_len:
                         self.fields_max_length[field] = cur_len
+
+    def get_output_abs_path(self):
+        return os.path.dirname(self.board.GetFileName()) + os.path.sep + OUTPUT_NAME
+
+    def get_board_name(self):
+        return os.path.splitext(os.path.basename(self.board.GetFileName()))[0]
 
     def get_header_str(self):
         hlen = len(HEADER)
