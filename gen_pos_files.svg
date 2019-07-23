@@ -15,7 +15,7 @@
    viewBox="0 0 32 32"
    version="1.1"
    id="SVGRoot"
-   sodipodi:docname="gen_pos_file_all.svg"
+   sodipodi:docname="gen_pos_files.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)">
   <sodipodi:namedview
      id="base"
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="15.999999"
-     inkscape:cx="15.169409"
-     inkscape:cy="13.523792"
+     inkscape:zoom="11.313708"
+     inkscape:cx="22.967693"
+     inkscape:cy="19.272662"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -74,17 +74,22 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:0.01;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#a00000;fill-opacity:1;stroke:none;stroke-width:0.189;stroke-miterlimit:4;stroke-dasharray:none"
-       x="2.9775398"
-       y="15.131594"
+       x="7.0234375"
+       y="18.824219"
        id="text1454"><tspan
          sodipodi:role="line"
-         x="2.9775398"
-         y="15.131594"
-         style="font-size:6.66666651px;line-height:0.49999999%;writing-mode:lr-tb;fill:#a00000;fill-opacity:1;stroke:#ffffff;stroke-width:0.189;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="tspan2813">Position</tspan><tspan
+         x="7.0234375"
+         y="18.824219"
+         style="font-size:8px;line-height:0.49999999%;writing-mode:lr-tb;fill:#a00000;fill-opacity:1;stroke:#ffffff;stroke-width:0.189;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="tspan2813">Pos</tspan><tspan
          sodipodi:role="line"
-         x="2.9775398"
-         y="24.007114"
+         x="7.0234375"
+         y="27.356718"
+         style="font-size:6.66666651px;line-height:0.49999999%;writing-mode:lr-tb;fill:#a00000;fill-opacity:1;stroke:#ffffff;stroke-width:0.189;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="tspan1450" /><tspan
+         sodipodi:role="line"
+         x="7.0234375"
+         y="27.75672"
          style="font-size:5.33333349px;line-height:0.01%;writing-mode:lr-tb;fill:#a00000;fill-opacity:1;stroke:#ffffff;stroke-width:0.189;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="tspan2811" /></text>
     <text
@@ -100,14 +105,14 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:0.01;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#a00000;fill-opacity:1;stroke:none;stroke-width:0.18897638;stroke-miterlimit:4;stroke-dasharray:none"
-       x="3.5797534"
-       y="21.93351"
+       x="7.0234375"
+       y="26.7281"
        id="text1454-6"><tspan
          sodipodi:role="line"
-         x="3.5797534"
-         y="21.93351"
-         style="font-size:6.66666651px;line-height:0.01%;writing-mode:lr-tb;fill:#a00000;fill-opacity:1;stroke:#ffffff;stroke-width:0.18897638;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         id="tspan2897">ALL</tspan></text>
+         x="7.0234375"
+         y="26.7281"
+         style="font-size:8px;line-height:0.01%;writing-mode:lr-tb;fill:#a00000;fill-opacity:1;stroke:#ffffff;stroke-width:0.18897638;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="tspan2897">Files</tspan></text>
     <rect
        style="fill:none;fill-opacity:0;stroke:#9f0000;stroke-width:1;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="rect2901"
@@ -116,5 +121,16 @@
        x="0.5"
        y="0.5"
        rx="5" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:0.01;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#a00000;fill-opacity:1;stroke:none;stroke-width:0.189;stroke-miterlimit:4;stroke-dasharray:none"
+       x="7.359375"
+       y="11.096119"
+       id="text1454-7"><tspan
+         sodipodi:role="line"
+         x="7.359375"
+         y="11.096119"
+         style="font-size:8px;line-height:0.01%;writing-mode:lr-tb;fill:#a00000;fill-opacity:1;stroke:#ffffff;stroke-width:0.189;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         id="tspan1452">Gen</tspan></text>
   </g>
 </svg>

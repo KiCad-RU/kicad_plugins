@@ -1,7 +1,7 @@
 # coding: utf8
-# gen_pos_file.py
+# gen_pos_files.py
 #
-# Copyright (C) 2018 Eldar Khayrullin <eldar.khayrullin@mail.ru>
+# Copyright (C) 2018, 2019 Eldar Khayrullin <eldar.khayrullin@mail.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,11 +18,11 @@
 
 ''' KiCad PCBNew Action Plugin for generating pos files'''
 
+import kicadsch
 import os
 import pcbnew
 import re
-
-import kicadsch
+import sys
 
 
 EOL = u'\r\n'
@@ -39,6 +39,7 @@ PACKAGE = 3
 POSX = 4
 POSY = 5
 ROT = 6
+IS_SMD = 7
 
 TRANSLATE_TABLE = {
     ord(u' ') : u'_',
@@ -120,7 +121,19 @@ TRANSLATE_TABLE = {
 
 
 class gen_pos_file(pcbnew.ActionPlugin):
+    def defaults(self):
+        self.name = "Generate pos files (SMD+ALL)"
+        self.category = "Generates files"
+        self.description = "Generates SMD+ALL components pos files"
+        self.icon_file_name = os.path.abspath(os.path.splitext(__file__)[0]) + '.svg'
+
     def Run(self):
+        board = pcbnew.GetBoard()
+        BoardProcessor().process_board(board)
+
+class BoardProcessor():
+    def process_board(self, board):
+        self.board = board
         self.get_placement_info()
         self.append_user_fields_to_placement_info()
         self.conform_fields_to_restrictions()
@@ -130,13 +143,9 @@ class gen_pos_file(pcbnew.ActionPlugin):
         self.placement_info_top = []
         self.placement_info_bottom = []
 
-        board = pcbnew.GetBoard()
-        origin = board.GetAuxOrigin()
+        origin = self.board.GetAuxOrigin()
 
-        for module in board.GetModules():
-            if not self.needs_include(module):
-                continue
-
+        for module in self.board.GetModules():
             reference = module.GetReference()
             if self.is_non_annotated_ref(reference):
                 continue
@@ -159,13 +168,18 @@ class gen_pos_file(pcbnew.ActionPlugin):
             else:
                 placement_info = self.placement_info_top
 
-            placement_info.append(
-                    [reference, u'', value, package, pos_x, pos_y, rotation])
+            is_smd = self.is_smd_module(module)
+
+            placement_info.append([reference, u'', value, package, pos_x, pos_y, rotation, is_smd])
 
         self.sort_placement_info_by_ref()
 
     def is_non_annotated_ref(self, ref):
         return ref[-1] == u'*'
+
+    def is_smd_module(self, module):
+        attr = module.GetAttributes()
+        return (attr == pcbnew.MOD_CMS) or (attr == pcbnew.MOD_VIRTUAL)
 
     def sort_placement_info_by_ref(self):
         for placement_info in (self.placement_info_top,
@@ -244,8 +258,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
         return u''
 
     def get_board_file_name_without_ext(self):
-        board = pcbnew.GetBoard()
-        return os.path.splitext(board.GetFileName())[0]
+        return os.path.splitext(self.board.GetFileName())[0]
 
     def conform_fields_to_restrictions(self):
         for placement_info in (self.placement_info_top,
@@ -264,65 +277,20 @@ class gen_pos_file(pcbnew.ActionPlugin):
     def save_placement_info(self):
         self.collect_fields_length_statistic()
 
-        name = self.get_board_file_name_without_ext() + u'-' + self.file_postfix + u'.pos'
-        pos_file = open(name, mode='w')
+        name = self.get_board_file_name_without_ext() + u'-ALL.pos'
+        pos_file_all = open(name, mode='w')
 
-        s = self.get_header_str()
-        pos_file.write(s + EOL)
+        name = self.get_board_file_name_without_ext() + u'-SMD.pos'
+        pos_file_smd = open(name, mode='w')
 
-        for placement_info in (self.placement_info_top,
-                               self.placement_info_bottom):
-            is_top = (placement_info is self.placement_info_top)
-            if is_top:
-                side = u'top'
-            else:
-                side = u'bottom'
+        s = self.get_header_str() + EOL
+        pos_file_all.write(s)
+        pos_file_smd.write(s)
 
-            for item in placement_info:
-                pos_file.write(item[REF])
-                num_sep = self.fields_max_length[REF] - len(item[REF]) + 1
-                pos_file.write(self.get_separators_str(num_sep))
+        self.write_placement_info(pos_file_all, pos_file_smd)
 
-                pos_file.write(item[TYPE])
-                num_sep = self.fields_max_length[TYPE] - len(item[TYPE]) + 1
-                pos_file.write(self.get_separators_str(num_sep))
-
-                num_sep = self.fields_max_length[VAL] + 1
-                if item[VAL] == '':
-                    pos_file.write(EMPTY_FIELD)
-                    num_sep -= 1
-                else:
-                    pos_file.write(item[VAL])
-                    num_sep -= len(item[VAL])
-                pos_file.write(self.get_separators_str(num_sep))
-
-                pos_file.write(item[TYPE])
-                num_sep = self.fields_max_length[TYPE] - len(item[TYPE]) + \
-                          self.fields_max_length[VAL] + 1
-                if item[VAL] != '':
-                    pos_file.write(JSEP + item[VAL])
-                    num_sep -= len(item[VAL]) + 1
-                pos_file.write(self.get_separators_str(num_sep))
-
-                pos_file.write(item[PACKAGE])
-                num_sep = self.fields_max_length[PACKAGE] - len(item[PACKAGE]) + 1
-                pos_file.write(self.get_separators_str(num_sep))
-
-                pos_file.write(str(item[POSX]))
-                num_sep = self.fields_max_length[POSX] - len(str(item[POSX])) + 1
-                pos_file.write(self.get_separators_str(num_sep))
-
-                pos_file.write(str(item[POSY]))
-                num_sep = self.fields_max_length[POSY] - len(str(item[POSY])) + 1
-                pos_file.write(self.get_separators_str(num_sep))
-
-                pos_file.write(str(item[ROT]))
-                num_sep = self.fields_max_length[ROT] - len(str(item[ROT])) + 1
-                pos_file.write(self.get_separators_str(num_sep))
-
-                pos_file.write(side + EOL)
-
-        pos_file.close()
+        pos_file_all.close()
+        pos_file_smd.close()
 
     def collect_fields_length_statistic(self):
         self.fields_max_length = []
@@ -335,7 +303,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
         for placement_info in (self.placement_info_top,
                                self.placement_info_bottom):
             for item in placement_info:
-                for field in range(0, len(placement_info[0])):
+                for field in range(0, len(placement_info[0]) - 1):
                     cur_len = len(str(item[field]))
                     if self.fields_max_length[field] < cur_len:
                         self.fields_max_length[field] = cur_len
@@ -347,7 +315,7 @@ class gen_pos_file(pcbnew.ActionPlugin):
         sep_fills.append(self.fields_max_length[TYPE] - len(HEADER[1]) + 1)
         sep_fills.append(self.fields_max_length[VAL] - len(HEADER[2]) + 1)
         sep_fills.append(self.fields_max_length[TYPE] + self.fields_max_length[VAL] + \
-                         1 - len(HEADER[3]))
+                         len(JSEP) + 1 - len(HEADER[3]))
         sep_fills.append(self.fields_max_length[PACKAGE] - len(HEADER[4]) + 1)
         sep_fills.append(self.fields_max_length[POSX] - len(HEADER[5]) + 1)
         sep_fills.append(self.fields_max_length[POSY] - len(HEADER[6]) + 1)
@@ -367,33 +335,67 @@ class gen_pos_file(pcbnew.ActionPlugin):
             separators += SEP
         return separators
 
+    def write_placement_info(self, ofile_all, ofile_smd):
+        for placement_info in (self.placement_info_top,
+                               self.placement_info_bottom):
+            is_top = (placement_info is self.placement_info_top)
+            if is_top:
+                side = u'top'
+            else:
+                side = u'bottom'
 
-class gen_pos_file_smd(gen_pos_file):
-    def defaults(self):
-        self.name = "Generate pos file (SMD+Virtual)"
-        self.category = "Generates file"
-        self.description = "Generates SMD+Virtual components pos file"
-        self.icon_file_name = os.path.abspath(os.path.splitext(__file__)[0]) + '_smd_virtual' + '.svg'
+            for item in placement_info:
+                self.write_item(item, ofile_all, side)
+                if item[IS_SMD]:
+                    self.write_item(item, ofile_smd, side)
 
-        self.file_postfix = u"SMD"
+    def write_item(self, item, ofile, side):
+        ofile.write(item[REF])
+        num_sep = self.fields_max_length[REF] - len(item[REF]) + 1
+        ofile.write(self.get_separators_str(num_sep))
 
-    def needs_include(self, module):
-        attr = module.GetAttributes()
-        return (attr == pcbnew.MOD_CMS) or (attr == pcbnew.MOD_VIRTUAL)
+        ofile.write(item[TYPE])
+        num_sep = self.fields_max_length[TYPE] - len(item[TYPE]) + 1
+        ofile.write(self.get_separators_str(num_sep))
+
+        num_sep = self.fields_max_length[VAL] + 1
+        if item[VAL] == '':
+            ofile.write(EMPTY_FIELD)
+            num_sep -= 1
+        else:
+            ofile.write(item[VAL])
+            num_sep -= len(item[VAL])
+        ofile.write(self.get_separators_str(num_sep))
+
+        ofile.write(item[TYPE])
+        num_sep = self.fields_max_length[TYPE] - len(item[TYPE]) + \
+                  self.fields_max_length[VAL] + len(JSEP) + 1
+        if item[VAL] != '':
+            ofile.write(JSEP + item[VAL])
+            num_sep -= len(item[VAL]) + 1
+        ofile.write(self.get_separators_str(num_sep))
+
+        ofile.write(item[PACKAGE])
+        num_sep = self.fields_max_length[PACKAGE] - len(item[PACKAGE]) + 1
+        ofile.write(self.get_separators_str(num_sep))
+
+        ofile.write(str(item[POSX]))
+        num_sep = self.fields_max_length[POSX] - len(str(item[POSX])) + 1
+        ofile.write(self.get_separators_str(num_sep))
+
+        ofile.write(str(item[POSY]))
+        num_sep = self.fields_max_length[POSY] - len(str(item[POSY])) + 1
+        ofile.write(self.get_separators_str(num_sep))
+
+        ofile.write(str(item[ROT]))
+        num_sep = self.fields_max_length[ROT] - len(str(item[ROT])) + 1
+        ofile.write(self.get_separators_str(num_sep))
+
+        ofile.write(side + EOL)
 
 
-class gen_pos_file_all(gen_pos_file):
-    def defaults(self):
-        self.name = "Generate pos file (ALL)"
-        self.category = "Generates file"
-        self.description = "Generates all components pos file"
-        self.icon_file_name = os.path.abspath(os.path.splitext(__file__)[0]) + '_all' + '.svg'
-
-        self.file_postfix = u"ALL"
-
-    def needs_include(self, module):
-        return True
-
-
-gen_pos_file_smd().register()
-gen_pos_file_all().register()
+if __name__ == '__main__':
+    board = pcbnew.LoadBoard(sys.argv[1])
+    BoardProcessor().process_board(board)
+else:
+    gen_pos_file().register()
