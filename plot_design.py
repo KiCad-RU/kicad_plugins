@@ -70,6 +70,8 @@ def plot_layers(board):
     plot_opts.SetDrillMarksType(pcbnew.PCB_PLOT_PARAMS.NO_DRILL_SHAPE)
     plot_opts.SetMirror(False)
     plot_opts.SetNegative(False)
+    plot_opts.SetPlotFrameRef(False)
+    plot_opts.SetPlotInvisibleText(False)
     plot_opts.SetPlotPadsOnSilkLayer(False)
     plot_opts.SetPlotReference(True)
     plot_opts.SetPlotValue(False)
