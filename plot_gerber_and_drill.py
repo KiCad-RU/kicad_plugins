@@ -27,6 +27,7 @@ import zipfile
 
 
 OUTPUT_NAME = 'gerber'
+OUTPUT_DIR = '_generated_files' + os.path.sep + OUTPUT_NAME
 
 
 class plot_gerber_and_drill(pcbnew.ActionPlugin):
@@ -50,10 +51,11 @@ def process_board(board):
 def clean_output(path):
     if os.path.exists(path):
         shutil.rmtree(path, ignore_errors=False, onerror=None)
+    os.makedirs(path)
 
 
 def get_output_abs_path(board):
-    return os.path.dirname(board.GetFileName()) + os.path.sep + OUTPUT_NAME
+    return os.path.dirname(board.GetFileName()) + os.path.sep + OUTPUT_DIR
 
 
 def get_board_name(board):
@@ -64,7 +66,7 @@ def plot_layers(board):
     plot_ctrl = pcbnew.PLOT_CONTROLLER(board)
 
     plot_opts = plot_ctrl.GetPlotOptions()
-    plot_opts.SetOutputDirectory(OUTPUT_NAME)
+    plot_opts.SetOutputDirectory(OUTPUT_DIR)
 
     plot_opts.SetCreateGerberJobFile(False)
     plot_opts.SetExcludeEdgeLayer(True)

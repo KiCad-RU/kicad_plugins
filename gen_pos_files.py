@@ -27,6 +27,7 @@ import sys
 
 
 OUTPUT_NAME = 'pos'
+OUTPUT_DIR = '_generated_files' + os.path.sep + OUTPUT_NAME
 
 EOL = u'\r\n'
 SEP = u' '
@@ -281,7 +282,7 @@ class BoardProcessor():
     def clean_output(self, path):
         if os.path.exists(path):
             shutil.rmtree(path, ignore_errors=False, onerror=None)
-        os.mkdir(path)
+        os.makedirs(path)
 
     def save_placement_info(self):
         self.collect_fields_length_statistic()
@@ -318,7 +319,7 @@ class BoardProcessor():
                         self.fields_max_length[field] = cur_len
 
     def get_output_abs_path(self):
-        return os.path.dirname(self.board.GetFileName()) + os.path.sep + OUTPUT_NAME
+        return os.path.dirname(self.board.GetFileName()) + os.path.sep + OUTPUT_DIR
 
     def get_board_name(self):
         return os.path.splitext(os.path.basename(self.board.GetFileName()))[0]

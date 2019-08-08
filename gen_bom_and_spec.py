@@ -282,16 +282,17 @@ class BoardProcessor():
 
     def save_lists(self):
         path = self.get_output_abs_path()
+        name = path + os.path.sep + self.get_board_name()
 
         fields_len_stat = self.collect_fields_length_statistic(BOM_HEADER, self.bom_list)
-        bom_file = open(path + os.path.sep + u'bom.csv', mode='w')
+        bom_file = open(name + u'-BOM.csv', mode='w')
         s = self.get_header_str(BOM_HEADER, fields_len_stat)
         bom_file.write(s)
         self.write_bom(bom_file, self.bom_list, fields_len_stat)
         bom_file.close()
 
         fields_len_stat = self.collect_fields_length_statistic(SPEC_HEADER, self.spec_list)
-        spec_file = open(path + os.path.sep + u'spec.csv', mode='w')
+        spec_file = open(name + u'-SPEC.csv', mode='w')
         s = self.get_header_str(SPEC_HEADER, fields_len_stat)
         spec_file.write(s)
         self.write_bom(spec_file, self.spec_list, fields_len_stat)
