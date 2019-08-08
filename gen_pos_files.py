@@ -147,11 +147,21 @@ class BoardProcessor():
     def get_placement_info(self):
         self.placement_info_top = []
         self.placement_info_bottom = []
+        components = self.get_components()
 
         origin = self.board.GetAuxOrigin()
 
         for module in self.board.GetModules():
             reference = module.GetReference()
+
+            comp = self.get_component_by_ref(components, reference)
+            if comp:
+                excluded = (self.get_user_field(comp, u'Исключён из ПЭ') != None)
+            else:
+                excluded = True
+            if excluded:
+                continue
+
             if self.is_non_annotated_ref(reference):
                 continue
 
@@ -209,17 +219,24 @@ class BoardProcessor():
                 comp = self.get_component_by_ref(components, item[REF])
                 if comp:
                     type_str = self.get_user_field(comp, u'Марка')
+                    if not type_str:
+                        type_str = ''
                     if type_str == '':
                         type_str = item[VAL]
                         item[VAL] = ''
 
                     var_str = self.get_user_field(comp, u'Тип')
+                    if not var_str:
+                        var_str = ''
                     if var_str != '':
                         type_str += JSEP + var_str
 
                     type_str = type_str.replace('\\"', '"')
 
-                    item[VAL] += self.get_user_field(comp, u'Класс точности')
+                    accuracy_str = self.get_user_field(comp, u'Класс точности')
+                    if not accuracy_str:
+                        accuracy_str = ''
+                    item[VAL] += accuracy_str
                 else:
                     type_str = item[VAL]
                     item[VAL] = ''
@@ -260,7 +277,7 @@ class BoardProcessor():
             if hasattr(field, u'name'):
                 if field.name == name:
                     return field.text
-        return u''
+        return None
 
     def get_board_file_name_without_ext(self):
         return os.path.splitext(self.board.GetFileName())[0]

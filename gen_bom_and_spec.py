@@ -107,15 +107,31 @@ class BoardProcessor():
             if comp:
                 if comp.unit != 1:
                     continue
+                excluded = (self.get_user_field(comp, u'Исключён из ПЭ') != None)
+                if excluded:
+                    continue
+
                 ref_str = comp.fields[REF_FIELD].text
                 value_str = comp.fields[VALUE_FIELD].text
                 group_str = self.get_user_field(comp, u'Группа')
+                if not group_str:
+                    group_str = ''
                 type_str = self.get_user_field(comp, u'Марка')
+                if not type_str:
+                    type_str = ''
                 type_str = type_str.replace('\\"', '"')
                 accuracy_str = self.get_user_field(comp, u'Класс точности')
+                if not accuracy_str:
+                    accuracy_str = ''
                 var_str = self.get_user_field(comp, u'Тип')
+                if not var_str:
+                    var_str = ''
                 std_str = self.get_user_field(comp, u'Стандарт')
+                if not std_str:
+                    std_str = ''
                 remark_str = self.get_user_field(comp, u'Примечание')
+                if not remark_str:
+                    remark_str = ''
                 remark_str = remark_str.replace('\\"', '"')
                 select_reg = (self.get_user_field(comp, u'Подбирают при регулировании') == '*')
 
@@ -219,7 +235,7 @@ class BoardProcessor():
             if hasattr(field, u'name'):
                 if field.name == name:
                     return field.text
-        return u''
+        return None
 
     def is_passive_element_value(self, val):
         return val[-2:] == 'Ом' or val[-1:] == 'Ф' or val[-2:] == 'Гн'
