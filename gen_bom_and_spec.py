@@ -302,7 +302,10 @@ class BoardProcessor():
         return os.path.dirname(self.board.GetFileName()) + os.path.sep + OUTPUT_DIR
 
     def get_board_name(self):
-        return os.path.splitext(os.path.basename(self.board.GetFileName()))[0]
+        name = self.board.GetTitleBlock().GetComment1()
+        if name == '':
+            name = os.path.splitext(os.path.basename(self.board.GetFileName()))[0]
+        return name
 
     def collect_fields_length_statistic(self, header, lst):
         fields_len_stat = []

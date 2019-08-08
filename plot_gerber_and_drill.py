@@ -20,6 +20,7 @@
 
 import os
 import pcbnew
+import re
 import shutil
 import sys
 import tempfile
@@ -45,7 +46,7 @@ def process_board(board):
     clean_output(get_output_abs_path(board))
     plot_layers(board)
     plot_drill(board)
-    zip_output(get_output_abs_path(board), get_board_name(board) + '-' + OUTPUT_NAME)
+    zip_output(get_output_abs_path(board), get_board_name(board))
 
 
 def clean_output(path):
@@ -59,7 +60,50 @@ def get_output_abs_path(board):
 
 
 def get_board_name(board):
-    return os.path.splitext(os.path.basename(board.GetFileName()))[0]
+    name = os.path.splitext(os.path.basename(board.GetFileName()))[0]
+
+    number = try_to_find_pcb_number(board)
+    if number != '':
+        if number[0] == '_':
+            name += number
+        else:
+            name = number
+
+    return name
+
+
+def try_to_find_pcb_number(board):
+    number = ''
+    rev = ''
+
+    for item in board.GetDrawings():
+        if type(item) is pcbnew.TEXTE_PCB:
+            text = item.GetText()
+
+            result = re.search('^rev\.\d', text, re.IGNORECASE)
+            if result:
+                rev = text
+                if number != '':
+                    break
+                continue
+
+            result = re.search('^\S*\.\d*\.\d*', text)
+            if result:
+                number = text
+                if rev != '':
+                    break
+
+    number.strip()
+    rev.strip()
+
+    result = re.search('rev\.\d', number, re.IGNORECASE)
+    if result:
+        s = number.split()
+        number = s[0] + '_' + s[1]
+    elif rev != '':
+        number += '_' + rev
+
+    return number
 
 
 def plot_layers(board):

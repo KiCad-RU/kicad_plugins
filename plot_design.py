@@ -59,7 +59,10 @@ def get_output_abs_path(board):
 
 
 def get_board_name(board):
-    return os.path.splitext(os.path.basename(board.GetFileName()))[0]
+    name = board.GetTitleBlock().GetComment1()
+    if name == '':
+        name = os.path.splitext(os.path.basename(board.GetFileName()))[0]
+    return name
 
 
 def plot_layers(board):
