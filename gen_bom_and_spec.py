@@ -20,6 +20,7 @@
 
 import complist
 import copy
+import getpass
 import kicadsch
 import os
 import pcbnew
@@ -27,8 +28,11 @@ import re
 import shutil
 import sys
 
+from datetime import datetime
 from decimal import Decimal
 from operator import itemgetter
+from platform import platform
+from version import VERSION
 
 
 OUTPUT_DIR = '_generated_files' + os.path.sep + 'bom_and_spec'
@@ -297,11 +301,14 @@ class BoardProcessor():
         return values
 
     def save_lists(self):
+        shtamp = self.get_shtamp_str()
+
         path = self.get_output_abs_path()
         name = path + os.path.sep + self.get_board_name()
 
         fields_len_stat = self.collect_fields_length_statistic(BOM_HEADER, self.bom_list)
         bom_file = open(name + u'-BOM.csv', mode='w')
+        bom_file.write(shtamp)
         s = self.get_header_str(BOM_HEADER, fields_len_stat)
         bom_file.write(s)
         self.write_bom(bom_file, self.bom_list, fields_len_stat)
@@ -309,10 +316,18 @@ class BoardProcessor():
 
         fields_len_stat = self.collect_fields_length_statistic(SPEC_HEADER, self.spec_list)
         spec_file = open(name + u'-SPEC.csv', mode='w')
+        spec_file.write(shtamp)
         s = self.get_header_str(SPEC_HEADER, fields_len_stat)
         spec_file.write(s)
         self.write_bom(spec_file, self.spec_list, fields_len_stat)
         spec_file.close()
+
+    def get_shtamp_str(self):
+        return '# Author: ' + getpass.getuser() + \
+               ' | Timeshtamp: ' + datetime.now().isoformat(timespec='seconds') + \
+               ' | Plugin: ' + VERSION + \
+               ' | OS: ' + platform() + \
+               EOL
 
     def get_output_abs_path(self):
         path = os.path.dirname(os.path.abspath(self.board.GetFileName()))

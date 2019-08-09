@@ -19,12 +19,16 @@
 ''' KiCad PCBNew Action Plugin for generating pos files'''
 
 import kicadsch
+import getpass
 import os
 import pcbnew
 import re
 import shutil
 import sys
 
+from datetime import datetime
+from platform import platform
+from version import VERSION
 
 OUTPUT_NAME = 'pos'
 OUTPUT_DIR = '_generated_files' + os.path.sep + OUTPUT_NAME
@@ -304,12 +308,15 @@ class BoardProcessor():
     def save_placement_info(self):
         self.collect_fields_length_statistic()
 
+        shtamp = self.get_shtamp_str()
         path = self.get_output_abs_path()
         name = path + os.path.sep + self.get_board_name()
 
         pos_file_all = open(name + u'-ALL.pos', mode='w')
         pos_file_smd = open(name + u'-SMD.pos', mode='w')
 
+        pos_file_all.write(shtamp)
+        pos_file_smd.write(shtamp)
         s = self.get_header_str() + EOL
         pos_file_all.write(s)
         pos_file_smd.write(s)
@@ -334,6 +341,13 @@ class BoardProcessor():
                     cur_len = len(str(item[field]))
                     if self.fields_max_length[field] < cur_len:
                         self.fields_max_length[field] = cur_len
+
+    def get_shtamp_str(self):
+        return '# Author: ' + getpass.getuser() + \
+               ' | Timeshtamp: ' + datetime.now().isoformat(timespec='seconds') + \
+               ' | Plugin: ' + VERSION + \
+               ' | OS: ' + platform() + \
+               EOL
 
     def get_output_abs_path(self):
         path = os.path.dirname(os.path.abspath(self.board.GetFileName()))
