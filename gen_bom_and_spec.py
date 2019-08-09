@@ -307,7 +307,7 @@ class BoardProcessor():
         name = path + os.path.sep + self.get_board_name()
 
         fields_len_stat = self.collect_fields_length_statistic(BOM_HEADER, self.bom_list)
-        bom_file = open(name + u'-BOM.csv', mode='w')
+        bom_file = open(name + u'-BOM.csv', mode='w', encoding='utf-8')
         bom_file.write(shtamp)
         s = self.get_header_str(BOM_HEADER, fields_len_stat)
         bom_file.write(s)
@@ -315,7 +315,7 @@ class BoardProcessor():
         bom_file.close()
 
         fields_len_stat = self.collect_fields_length_statistic(SPEC_HEADER, self.spec_list)
-        spec_file = open(name + u'-SPEC.csv', mode='w')
+        spec_file = open(name + u'-SPEC.csv', mode='w', encoding='utf-8')
         spec_file.write(shtamp)
         s = self.get_header_str(SPEC_HEADER, fields_len_stat)
         spec_file.write(s)
