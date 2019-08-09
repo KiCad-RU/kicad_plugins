@@ -315,7 +315,8 @@ class BoardProcessor():
         spec_file.close()
 
     def get_output_abs_path(self):
-        return os.path.dirname(self.board.GetFileName()) + os.path.sep + OUTPUT_DIR
+        path = os.path.dirname(os.path.abspath(self.board.GetFileName()))
+        return path + os.path.sep + OUTPUT_DIR
 
     def get_board_name(self):
         name = self.board.GetTitleBlock().GetComment1()

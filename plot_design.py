@@ -55,7 +55,8 @@ def clean_output(path):
 
 
 def get_output_abs_path(board):
-    return os.path.dirname(board.GetFileName()) + os.path.sep + OUTPUT_DIR
+    path = os.path.dirname(os.path.abspath(board.GetFileName()))
+    return path + os.path.sep + OUTPUT_DIR
 
 
 def get_board_name(board):
