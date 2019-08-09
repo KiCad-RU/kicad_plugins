@@ -18,6 +18,7 @@
 
 ''' KiCad PCBNew Action Plugin for plot design files '''
 
+import getpass
 import os
 import pcbnew
 import shutil
@@ -25,9 +26,14 @@ import sys
 import tempfile
 import zipfile
 
+from datetime import datetime
+from platform import platform
+from version import VERSION
 
 OUTPUT_NAME = 'design'
 OUTPUT_DIR = '_generated_files' + os.path.sep + OUTPUT_NAME
+
+EOL = u'\r\n'
 
 
 class plot_design(pcbnew.ActionPlugin):
@@ -150,8 +156,19 @@ def zip_output(path, name):
     temp_dir = tempfile.mkdtemp()
     zip_name = temp_dir + os.path.sep + name
     shutil.make_archive(zip_name, 'zip', path)
+
+    zf = zipfile.ZipFile(zip_name + '.zip', 'a')
+    zf.comment = bytes(get_shtamp_comment(), 'utf-8')
+    zf.close()
+
     shutil.move(zip_name + '.zip', path)
     os.rmdir(temp_dir)
+
+def get_shtamp_comment():
+    return EOL + 'Author: ' + getpass.getuser() + EOL + \
+           'Timeshtamp: ' + datetime.now().isoformat(timespec='seconds') + EOL + \
+           'Plugin: ' + VERSION + EOL + \
+           'OS: ' + platform()
 
 
 if __name__ == '__main__':
