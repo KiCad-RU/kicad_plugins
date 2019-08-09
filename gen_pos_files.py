@@ -133,11 +133,18 @@ class gen_pos_file(pcbnew.ActionPlugin):
         self.name = "Generate pos files (SMD+ALL)"
         self.category = "Generates files"
         self.description = "Generates SMD+ALL components pos files"
-        self.icon_file_name = os.path.abspath(os.path.splitext(__file__)[0]) + '.svg'
+        self.icon_file_name = self.get_icon_file_name()
 
     def Run(self):
         board = pcbnew.GetBoard()
         BoardProcessor().process_board(board)
+
+    def get_icon_file_name(self):
+        dirname = os.path.dirname(os.path.abspath(__file__))
+        filename = os.path.splitext(os.path.basename(__file__))[0]
+
+        return dirname + os.path.sep + 'bitmaps' + os.path.sep + filename + '.png'
+
 
 class BoardProcessor():
     def process_board(self, board):
