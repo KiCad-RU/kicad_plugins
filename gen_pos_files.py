@@ -169,7 +169,10 @@ class BoardProcessor():
             if comp:
                 excluded = (self.get_user_field(comp, u'Исключён из ПЭ') != None)
             else:
-                excluded = True
+                if not module.IsPlaced() and reference.startswith('FD'):
+                    excluded = False
+                else:
+                    excluded = True
             if excluded:
                 continue
 
