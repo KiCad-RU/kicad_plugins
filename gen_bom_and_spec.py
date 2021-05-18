@@ -40,6 +40,7 @@ OUTPUT_DIR = '_generated_files' + os.path.sep + 'bom_and_spec'
 EOL = u'\r\n'
 SEP = u' '
 JSEP = u'_'
+FIELD_SEP = u' '
 EMPTY_FIELD = u'~'
 
 BOM_HEADER = (u'Наименование', u'Стандарт', u'Кол-во', u'Примечание')
@@ -147,7 +148,8 @@ class BoardProcessor():
                 select_reg = (self.get_user_field(comp, u'Подбирают при регулировании') == '*')
 
                 value_str = cl._get_value_with_units(ref_str, value_str)
-                name_str = type_str + value_str + accuracy_str + var_str
+                name_str = type_str + FIELD_SEP + value_str + FIELD_SEP + accuracy_str + FIELD_SEP + var_str
+                name_str = name_str.lstrip().rstrip()
                 name_str = name_str.replace('\\"', '"')
 
                 if type_str == '':
