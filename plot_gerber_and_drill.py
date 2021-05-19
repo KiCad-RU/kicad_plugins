@@ -57,7 +57,7 @@ class plot_gerber_and_drill(pcbnew.ActionPlugin):
 
 def process_board(board):
     clean_output(get_output_abs_path(board))
-    plot_layers(board)
+    plot_layers_and_apply(board)
     plot_drill(board)
     zip_output(get_output_abs_path(board), get_board_name(board))
 
@@ -120,16 +120,12 @@ def try_to_find_pcb_number(board):
     return number
 
 
-def plot_layers(board):
+def plot_layers_and_apply(board):
     plot_ctrl = pcbnew.PLOT_CONTROLLER(board)
 
     plot_opts = plot_ctrl.GetPlotOptions()
     plot_opts.SetOutputDirectory(OUTPUT_DIR)
-
-    plot_opts.SetCreateGerberJobFile(False)
     plot_opts.SetExcludeEdgeLayer(True)
-    plot_opts.SetGerberPrecision(6)
-    plot_opts.SetIncludeGerberNetlistInfo(False)
     plot_opts.SetPlotFrameRef(False)
     plot_opts.SetPlotInvisibleText(False)
     plot_opts.SetPlotMode(pcbnew.FILLED)
@@ -140,9 +136,14 @@ def plot_layers(board):
     plot_opts.SetSkipPlotNPTH_Pads(False)
     plot_opts.SetSubtractMaskFromSilk(True)
     plot_opts.SetUseAuxOrigin(True)
+    plot_opts.SetCreateGerberJobFile(True)
+    plot_opts.SetGerberPrecision(6)
+    plot_opts.SetIncludeGerberNetlistInfo(False)
     plot_opts.SetUseGerberAttributes(False)
     plot_opts.SetUseGerberProtelExtensions(False)
     plot_opts.SetUseGerberX2format(False)
+
+    board.SetPlotOptions(plot_opts)
 
     plot_ctrl.SetLayer(pcbnew.Edge_Cuts)
     plot_ctrl.OpenPlotfile('Edge_Cuts', pcbnew.PLOT_FORMAT_GERBER, 'Edge_Cuts')
@@ -195,6 +196,7 @@ def plot_drill(board):
     gen_drill.SetOptions(False, False, board.GetAuxOrigin(), False)
     gen_drill.SetRouteModeForOvalHoles(True)
     gen_drill.CreateDrillandMapFilesSet(get_output_abs_path(board), True, False)
+    #TODO apply drill options to project
 
 
 def zip_output(path, name):
