@@ -2,7 +2,8 @@
 Contain:
 - Footprint Wizard Plugin for generating Russia packages
 - PCBNew Action Plugin for ploting design (pcb and assembly) files
-- PCBNew Action Plugin for ploting gerber and drill files</b>
+- PCBNew Action Plugin for ploting gerber and drill files
+
 **WARNING: next not work with format .kicad_sch only old .sch**
 - PCBNew Action Plugin for generating BOM and Specification files (GOST) *
 - PCBNew Action Plugin for generating Pos files *
