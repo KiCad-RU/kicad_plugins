@@ -248,9 +248,10 @@ class BoardProcessor():
                     type_str = type_str.replace('\\"', '"')
 
                     accuracy_str = self.get_user_field(comp, u'Класс точности')
-                    if not accuracy_str:
-                        accuracy_str = ''
-                    item[VAL] += accuracy_str
+                    if accuracy_str:
+                        if accuracy_str[0].isdigit():
+                            item[VAL] += JSEP
+                        item[VAL] += accuracy_str
                 else:
                     type_str = item[VAL]
                     item[VAL] = ''
