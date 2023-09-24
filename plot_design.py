@@ -1,7 +1,7 @@
 # coding: utf8
 # plot_design.py
 #
-# Copyright (C) 2019 Eldar Khayrullin <eldar.khayrullin@mail.ru>
+# Copyright (C) 2019-2023 Eldar Khayrullin <eldar.khayrullin@mail.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ def get_output_abs_path(board):
 
 
 def get_board_name(board):
-    name = board.GetTitleBlock().GetComment1()
+    name = board.GetTitleBlock().GetComment(0)
     if name == '':
         name = os.path.splitext(os.path.basename(board.GetFileName()))[0]
     return name
@@ -84,22 +84,21 @@ def plot_layers(board):
     plot_opts = plot_ctrl.GetPlotOptions()
     plot_opts.SetOutputDirectory(OUTPUT_DIR)
 
-    plot_opts.SetDXFPlotUnits(pcbnew.DXF_PLOTTER.DXF_UNIT_MILLIMETERS)
-    plot_opts.SetDrillMarksType(pcbnew.PCB_PLOT_PARAMS.NO_DRILL_SHAPE)
+    plot_opts.SetDXFPlotUnits(pcbnew.DXF_UNITS_MILLIMETERS)
+    plot_opts.SetDrillMarksType(pcbnew.DRILL_MARKS_NO_DRILL_SHAPE)
     plot_opts.SetMirror(False)
     plot_opts.SetNegative(False)
     plot_opts.SetPlotFrameRef(False)
     plot_opts.SetPlotInvisibleText(False)
-    plot_opts.SetPlotPadsOnSilkLayer(False)
     plot_opts.SetPlotReference(True)
     plot_opts.SetPlotValue(False)
     plot_opts.SetPlotViaOnMaskLayer(False)
     plot_opts.SetSubtractMaskFromSilk(True)
     plot_opts.SetUseAuxOrigin(True)
 
-    plot_opts.SetExcludeEdgeLayer(False)
+    #plot_opts.SetExcludeEdgeLayer(False)
     plot_opts.SetDXFPlotPolygonMode(False)
-    plot_opts.SetTextMode(pcbnew.PLOTTEXTMODE_NATIVE)
+    plot_opts.SetTextMode(pcbnew.PLOT_TEXT_MODE_NATIVE)
 
     plot_ctrl.SetLayer(pcbnew.F_Fab)
     plot_ctrl.OpenPlotfile('F_Fab', pcbnew.PLOT_FORMAT_DXF, 'F_Fab')
@@ -113,9 +112,9 @@ def plot_layers(board):
     plot_ctrl.OpenPlotfile('Edge_Cuts', pcbnew.PLOT_FORMAT_DXF, 'Edge_Cuts')
     plot_ctrl.PlotLayer()
 
-    plot_opts.SetExcludeEdgeLayer(True)
+    #plot_opts.SetExcludeEdgeLayer(True)
     plot_opts.SetDXFPlotPolygonMode(True)
-    plot_opts.SetTextMode(pcbnew.PLOTTEXTMODE_STROKE)
+    plot_opts.SetTextMode(pcbnew.PLOT_TEXT_MODE_STROKE)
 
     plot_ctrl.SetLayer(pcbnew.F_SilkS)
     plot_ctrl.OpenPlotfile('F_SilkS', pcbnew.PLOT_FORMAT_DXF, 'F_SilkS')
