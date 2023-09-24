@@ -90,6 +90,7 @@ def plot_layers(board):
     plot_opts.SetNegative(False)
     plot_opts.SetPlotFrameRef(False)
     plot_opts.SetPlotInvisibleText(False)
+    #plot_opts.SetPlotPadsOnSilkLayer(False)
     plot_opts.SetPlotReference(True)
     plot_opts.SetPlotValue(False)
     plot_opts.SetPlotViaOnMaskLayer(False)

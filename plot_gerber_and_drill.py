@@ -1,7 +1,7 @@
 # coding: utf8
 # plot_gerber_and_drill.py
 #
-# Copyright (C) 2019 Eldar Khayrullin <eldar.khayrullin@mail.ru>
+# Copyright (C) 2019-2023 Eldar Khayrullin <eldar.khayrullin@mail.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ def try_to_find_pcb_number(board):
     rev = ''
 
     for item in board.GetDrawings():
-        if type(item) is pcbnew.TEXTE_PCB:
+        if type(item) is pcbnew.PCB_TEXT:
             text = item.GetText()
 
             result = re.search('^rev\.\d', text, re.IGNORECASE)
@@ -125,11 +125,11 @@ def plot_layers_and_apply(board):
 
     plot_opts = plot_ctrl.GetPlotOptions()
     plot_opts.SetOutputDirectory(OUTPUT_DIR)
-    plot_opts.SetExcludeEdgeLayer(True)
+    #plot_opts.SetExcludeEdgeLayer(True)
     plot_opts.SetPlotFrameRef(False)
     plot_opts.SetPlotInvisibleText(False)
     plot_opts.SetPlotMode(pcbnew.FILLED)
-    plot_opts.SetPlotPadsOnSilkLayer(False)
+    #plot_opts.SetPlotPadsOnSilkLayer(False)
     plot_opts.SetPlotReference(True)
     plot_opts.SetPlotValue(False)
     plot_opts.SetPlotViaOnMaskLayer(False)
@@ -193,7 +193,7 @@ def plot_layers_and_apply(board):
 def plot_drill(board):
     gen_drill = pcbnew.EXCELLON_WRITER(board)
     gen_drill.SetFormat(True, pcbnew.GENDRILL_WRITER_BASE.KEEP_ZEROS)
-    gen_drill.SetOptions(False, False, board.GetAuxOrigin(), False)
+    gen_drill.SetOptions(False, False, board.GetDesignSettings().GetAuxOrigin(), False)
     gen_drill.SetRouteModeForOvalHoles(True)
     gen_drill.CreateDrillandMapFilesSet(get_output_abs_path(board), True, False)
     #TODO apply drill options to project
