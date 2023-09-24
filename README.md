@@ -10,7 +10,7 @@ Contain:
 Remarks: * - uses result of kicadbom2spec application.
 
 ## Install
-See [KiCad PCBNew documentation](http://docs.kicad-pcb.org/stable/en/pcbnew.html#Footprint_Wizards)
+See [KiCad PCBNew documentation](https://docs.kicad.org/7.0/en/pcbnew/pcbnew.html#scripting)
 
 ## Links
 Files kicadsch.py and complist.py from [kicadbom2spec](https://github.com/KiCad-RU/kicadbom2spec)
