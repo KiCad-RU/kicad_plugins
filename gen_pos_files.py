@@ -1,7 +1,7 @@
 # coding: utf8
 # gen_pos_files.py
 #
-# Copyright (C) 2018, 2019 Eldar Khayrullin <eldar.khayrullin@mail.ru>
+# Copyright (C) 2018-2023 Eldar Khayrullin <eldar.khayrullin@mail.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -160,16 +160,16 @@ class BoardProcessor():
         self.placement_info_bottom = []
         components = self.get_components()
 
-        origin = self.board.GetAuxOrigin()
+        origin = self.board.GetDesignSettings().GetAuxOrigin()
 
-        for module in self.board.GetModules():
-            reference = module.GetReference()
+        for footprint in self.board.GetFootprints():
+            reference = footprint.GetReference()
 
             comp = self.get_component_by_ref(components, reference)
             if comp:
                 excluded = (self.get_user_field(comp, u'Исключён из ПЭ') != None)
             else:
-                if not module.IsPlaced() and reference.startswith('FD'):
+                if not footprint.IsPlaced() and reference.startswith('FD'):
                     excluded = False
                 else:
                     excluded = True
@@ -179,25 +179,25 @@ class BoardProcessor():
             if self.is_non_annotated_ref(reference):
                 continue
 
-            value = module.GetValue()
-            package = str(module.GetFPID().GetLibItemName())
+            value = footprint.GetValue()
+            package = str(footprint.GetFPID().GetLibItemName())
 
-            pos = module.GetPosition() - origin
+            pos = footprint.GetPosition() - origin
 
             pos_x = pcbnew.ToMM(pos.x)
-            if module.IsFlipped():
+            if footprint.IsFlipped():
                 pos_x = -pos_x
 
             pos_y = -pcbnew.ToMM(pos.y)
 
-            rotation = module.GetOrientationDegrees()
+            rotation = footprint.GetOrientationDegrees()
 
-            if module.IsFlipped():
+            if footprint.IsFlipped():
                 placement_info = self.placement_info_bottom
             else:
                 placement_info = self.placement_info_top
 
-            is_smd = self.is_smd_module(module)
+            is_smd = self.is_smd_footprint(footprint)
 
             placement_info.append([reference, u'', value, package, pos_x, pos_y, rotation, is_smd])
 
@@ -206,9 +206,8 @@ class BoardProcessor():
     def is_non_annotated_ref(self, ref):
         return ref[-1] == u'*'
 
-    def is_smd_module(self, module):
-        attr = module.GetAttributes()
-        return (attr == pcbnew.MOD_CMS) or (attr == pcbnew.MOD_VIRTUAL)
+    def is_smd_footprint(self, footprint):
+        return footprint.GetAttributes() == pcbnew.FP_SMD
 
     def sort_placement_info_by_ref(self):
         for placement_info in (self.placement_info_top,
@@ -364,7 +363,7 @@ class BoardProcessor():
         return path + os.path.sep + OUTPUT_DIR
 
     def get_board_name(self):
-        name = self.board.GetTitleBlock().GetComment1()
+        name = self.board.GetTitleBlock().GetComment(0)
         if name == '':
             name = os.path.splitext(os.path.basename(self.board.GetFileName()))[0]
         return name
