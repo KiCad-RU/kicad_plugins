@@ -1,7 +1,7 @@
 # coding: utf8
 # gen_bom_and_spec.py
 #
-# Copyright (C) 2018, 2019 Eldar Khayrullin <eldar.khayrullin@mail.ru>
+# Copyright (C) 2018-2023 Eldar Khayrullin <eldar.khayrullin@mail.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -343,7 +343,7 @@ class BoardProcessor():
         return path + os.path.sep + OUTPUT_DIR
 
     def get_board_name(self):
-        name = self.board.GetTitleBlock().GetComment1()
+        name = self.board.GetTitleBlock().GetComment(0)
         if name == '':
             name = os.path.splitext(os.path.basename(self.board.GetFileName()))[0]
         return name
