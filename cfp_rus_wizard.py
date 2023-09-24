@@ -1,6 +1,6 @@
 # cfp_rus_wizard.py
 #
-# Copyright (C) 2016,2017 Eldar Khayrullin <eldar.khayrullin@mail.ru>
+# Copyright (C) 2016-2023 Eldar Khayrullin <eldar.khayrullin@mail.ru>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -280,17 +280,17 @@ class CFPRUSWizard(FootprintWizardBase.FootprintWizard):
         self.draw.Value(0, text_y, text_size)
         self.draw.Reference(0, -text_y, text_size)
 
-        txt = pcbnew.TEXTE_MODULE(self.module)
+        txt = pcbnew.FP_TEXT(self.module)
         txt.SetText('%R')
-        txt.SetPosition(pcbnew.wxPoint(pcbnew.FromMM(0), pcbnew.FromMM(0)))
-        txt.SetHorizJustify(pcbnew.GR_TEXT_HJUSTIFY_CENTER)
-        txt.SetTextSize(pcbnew.wxSize(text_size, text_size))
-        txt.SetThickness(pcbnew.FromMM(0.15))
+        txt.SetPosition(pcbnew.VECTOR2I(pcbnew.FromMM(0), pcbnew.FromMM(0)))
+        txt.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_CENTER)
+        txt.SetTextSize(pcbnew.VECTOR2I(text_size, text_size))
+        txt.SetTextThickness(pcbnew.FromMM(0.15))
         txt.SetLayer(pcbnew.F_Fab)
         self.module.Add(txt)
 
-        # Set module attribute
-        self.module.SetAttributes(pcbnew.MOD_DEFAULT)
+        # Set module SMD attribute
+        self.module.SetAttributes(pcbnew.FP_SMD)
 
 
 CFPRUSWizard().register()
