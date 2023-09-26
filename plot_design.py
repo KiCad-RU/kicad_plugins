@@ -164,7 +164,10 @@ def zip_output(path, name):
     shutil.make_archive(zip_name, 'zip', path)
 
     zf = zipfile.ZipFile(zip_name + '.zip', 'a')
-    zf.comment = bytes(get_shtamp_comment(), 'utf-8')
+    if sys.version_info < (3, 0):
+        zf.comment = get_shtamp_comment()
+    else:
+        zf.comment = bytes(get_shtamp_comment(), 'utf-8')
     zf.close()
 
     shutil.move(zip_name + '.zip', path)
