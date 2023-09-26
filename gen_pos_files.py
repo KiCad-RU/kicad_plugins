@@ -306,7 +306,7 @@ class BoardProcessor():
 
     def translate_field(self, field):
         if not isinstance(field, str) or field == '':
-            return ''
+            return '~'
         else:
             return field.translate(TRANSLATE_TABLE)
 
