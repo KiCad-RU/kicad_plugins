@@ -305,7 +305,7 @@ class BoardProcessor():
                 item[PACKAGE] = self.translate_field(item[PACKAGE])
 
     def translate_field(self, field):
-        if field == '':
+        if not isinstance(field, str) or field == '':
             return ''
         else:
             return field.translate(TRANSLATE_TABLE)
