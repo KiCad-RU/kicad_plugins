@@ -172,7 +172,7 @@ def zip_output(path, name):
 
 def get_shtamp_comment():
     return EOL + 'Author: ' + getpass.getuser() + EOL + \
-           'Timeshtamp: ' + datetime.now().isoformat(timespec='seconds') + EOL + \
+           'Timeshtamp: ' + datetime.now().isoformat() + EOL + \
            'Plugin: ' + VERSION + EOL + \
            'OS: ' + platform()
 
