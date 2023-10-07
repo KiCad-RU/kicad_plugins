@@ -1,0 +1,9 @@
+- update gen_pos_files.py
+- add GOST Project Template:
+	- sch gost sheet with default some text, example: Схема электрическая принципиальная|соединений|...
+	- sch setup formatting settings
+	- sch setup field name templates (for eskd-templates/kicadbom2spec)
+	- sch setup project -> net classes
+	- sch template технические требования
+	- pcb gost sheet
+- add metadata to search in Plugin Manager (https://dev-docs.kicad.org/en/addons/)
